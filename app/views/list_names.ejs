@@ -6,6 +6,9 @@
   </head>
   <body>
     <h1><%= title %></h1>
-    <p>Hi Guys, Welcome to <%= title %></p>
+    <% for (var i=0; i<UserRows.length; i++) { %>
+       <p><%= UserRows[i].name %></p>
+    <% } %>
+    </script>
   </body>
 </html>
