@@ -34,13 +34,26 @@ exports.list_names_handler = function(req, res){
 exports.remove_user_handler = function(req, res){
     connection.connect();
     
-    connection.query('SELECT * FROM User WHERE name=\''+, function(err, rows, fields) {
+    connection.query('SELECT * FROM User WHERE name=\''+req.name+'\'', function(err, rows, fields) {
 	    if (err) throw err;
 
-	    res.render('list_names', {
-		    title: 'A list of names', 
-		    UserRows: rows
-		});
+	    /* Check to see if one user was found. */
+	    if (rows.length==1)
+		{
+		    /* Remove the user. */
+		    
+		}
+	    else
+		{
+		    /* Send a failure response. */
+		    res.send(200,{
+			    misc: {
+				action: "remove",
+				status: "failed",
+				msg: "No user found."    
+				   }
+			});
+		}
 	});
     connection.end();
 };
