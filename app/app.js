@@ -11,6 +11,7 @@ var http = require('http');
 var path = require('path');
 var data = require('./routes/data');
 var app = express();
+var ownWishList = require('./routes/ownWishList');
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -38,6 +39,11 @@ app.get('/john_test', john_test.john_test_handler);
 app.get('/list_names', john_test.list_names_handler);
 app.get('/get_user', data.dataHandler);
 app.get('/remove_user', john_test.remove_user_handler);
+app.post('/user/:userId/items/add', ownWishList.addItems); // add items to own wish list
+app.get('/user/:userId/items/get', ownWishList.getItems);  // get all the items 
+//app.post('/user/:userId/items/edit', ownWishList.editItems); // edit an item in the wishlist 
+app.post('/user/:userId/items/remove', ownWishList.removeItems); // remove an item from the wishlist 
+
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

@@ -1,0 +1,11 @@
+var function = createResponse (code, message, status, miscellaneous, callback){
+    var responseObject = {
+	'code' : code, 
+	'message' : message,
+	'status' : status, 
+	'miscellaneous' : miscellaneous
+    };
+    if (callback)
+	callback ({}, responseObject);
+};
+exports.createResponse = createResponse;
