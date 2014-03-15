@@ -1,4 +1,6 @@
 var gV = require('../globals/globalVariables.js');
+var string = require ('string');
+var _ = require('underscore');
 var function = createResponse (code, message, status, miscellaneous, callback){
     var responseObject = {
 	'code' : code, 
@@ -16,3 +18,9 @@ var function = createResponse (code, message, status, miscellaneous, callback){
     }
 };
 exports.createResponse = createResponse;
+
+var function = arToStringArray (array){
+    return string((_.map([1, 2, 3], function(num){ return "'" + num + "'"}))).toString();
+};
+
+exports.arToStringArray = arToStringArray;
