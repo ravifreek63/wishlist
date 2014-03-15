@@ -39,10 +39,10 @@ app.get('/john_test', john_test.john_test_handler);
 app.get('/list_names', john_test.list_names_handler);
 app.get('/get_user', data.dataHandler);
 app.get('/remove_user', john_test.remove_user_handler);
-app.post('/user/:userId/items/add', ownWishList.addItems); // add items to own wish list
-app.get('/user/:userId/items/get', ownWishList.getItems);  // get all the items 
-//app.post('/user/:userId/items/edit', ownWishList.editItems); // edit an item in the wishlist 
-app.post('/user/:userId/items/remove', ownWishList.removeItems); // remove an item from the wishlist 
+app.post('/user/:userId/items/add', ownWishList.addItems); // add items to own wish list , single item 
+app.get('/user/:userId/items/get', ownWishList.getItems);  // get all the items , bulk query 
+app.post('/user/:userId/items/edit', ownWishList.editItems); // edit an item in the wishlist 
+app.post('/user/:userId/items/remove', ownWishList.removeItems); // remove an item from the wishlist , bulk query
 
 
 http.createServer(app).listen(app.get('port'), function(){

@@ -10,6 +10,7 @@
     "ejs": "*",
     "stylus": "*", 
     "string": "*", 
-    "underscore" : "*"
+    "underscore" : "*",
+    "node-uuid" : "*"
   }
 }
