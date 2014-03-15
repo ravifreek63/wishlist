@@ -12,6 +12,7 @@ var path = require('path');
 var data = require('./routes/data');
 var app = express();
 var ownWishList = require('./routes/ownWishList');
+var accounts = require('./routes/accounts');
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -43,7 +44,8 @@ app.post('/user/:userId/items/add', ownWishList.addItems); // add items to own w
 app.get('/user/:userId/items/get', ownWishList.getItems);  // get all the items , bulk query 
 app.post('/user/:userId/items/edit', ownWishList.editItems); // edit an item in the wishlist 
 app.post('/user/:userId/items/remove', ownWishList.removeItems); // remove an item from the wishlist , bulk query
-
+app.post('/signUp', accounts.createAccount); // Signup for the user 
+app.post('/signIn', accounts.signIn); // login for the user
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

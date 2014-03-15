@@ -1,7 +1,7 @@
 var mysql      = require('mysql');
 var connection = mysql.createConnection({
   host     : 'localhost',
-  database   : 'mydb', 
+  database   : 'WishListDB', 
   user     : 'root',
   password : 'toot'
 });
