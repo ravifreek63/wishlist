@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Friends</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        $.getJSON("/user/<%= userId %>/friends/get",function(data) {
+	  for (var i=0; i<data.friends.length; i++) {
+	    $("#friend_list").append('<li>'+data.friends[i]+'</li>');
+	  }
+        });
+      });
+      $(document).ready(function() {
+        $("#add_friend_textbox").on("keypress", function(e) {
+	  if (e.keyCode == 13) /* enter key pressed */ {
+	    var tbVal = $("#add_friend_textbox").val();
+	    $("#add_friend_textbox").val("");
+	    $("#friend_list").append('<li>'+tbVal+'</li>');
+	    return false; // prevent the keypress from triggering further
+	  }
+	});
+      });
+    </script>
+  </head>
+  <body>
+    <div id="friend_list_div" style="background:aqua; float:left; width:200px; height: 500px; position:relative;">
+      <ul id="friend_list">
+      </ul>
+      <div id="add_friend_div" style="position:absolute; bottom:0; height:50px">
+        Add a friend:
+        <input type="text" id="add_friend_textbox" style="width:150px">
+	</input>
+      </div>
+    </div>
+    <div id="main_content" style="margin:20px; float=left">
+      Hi, <%= userId %>
+    </div>
+  </body>
+</html>
