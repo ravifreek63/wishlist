@@ -21,7 +21,11 @@ exports.addFriend = function (req, res) {
 
 /* remove a friend */
 exports.removeFriend = function (req, res) {
-    // TODO: Needs implementation.
+    var userId = req.params.userId;
+    var friendToRemove = req.body.removeFriendWithName;
+    res.writeHead(200, {'content-type': 'text/json' });
+    res.write( JSON.stringify({status: "removed"} ));
+    res.end('\n');
 };
 
 /* invite a friend */

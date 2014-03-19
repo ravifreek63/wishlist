@@ -4,25 +4,43 @@
     <title>Friends</title>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script>
-      function friendListItem(name) {
+      // Define a list item
+      function friendListItem(name,id) {
         var s = name;
-        s = s + ' (<a>invite</a>)';
-        s = '<li>' + s + '</li>';
+        var itemId = "friendListItem_"+id;
+        s = s + '<br>';
+        s = s + '<button> invite </button>';
+        s = s + '<button> edit </button>';
+        var action = "removeFriend('"+name+"','"+itemId+"')";
+        s = s + '<button onclick='+action+'> delete </button>';
+        s = '<div>' + s + '</div>';
+        s = '<li id=\''+itemId+'\'>' + s + '</li>';
         return s;
-      }
+      };
+      // Remove a friend
+      function removeFriend(name,itemId) {
+        $.post("/user/<%= userId %>/friends/remove",{'removeFriendWithName':name},
+           function(response) { // handles the response
+             // TODO: Check the response to ensure everything worked.
+             $("#"+itemId).remove();
+           });
+      };
+      // Get the user's list of friends and populate the list
       $(document).ready(function() {
         $.getJSON("/user/<%= userId %>/friends/get",function(data) {
 	  for (var i=0; i<data.friends.length; i++) {
-	    $("#friend_list").append(friendListItem(data.friends[i]));
+            var name = data.friends[i];
+	    $("#friend_list").append(friendListItem(name,name));
 	  }
         });
       });
+      // Add a friend
       $(document).ready(function() {
         $("#add_friend_textbox").on("keypress", function(e) {
 	  if (e.keyCode == 13) /* enter key pressed */ {
 	    var friendName = $("#add_friend_textbox").val();
 	    $("#add_friend_textbox").val("");
-	    $("#friend_list").append(friendListItem(friendName));
+	    $("#friend_list").append(friendListItem(friendName,friendName));
 	    return false; // prevent the keypress from triggering further
 	  }
 	});
