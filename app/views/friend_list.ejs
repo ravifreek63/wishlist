@@ -2,22 +2,27 @@
 <html>
   <head>
     <title>Friends</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script>
+      function friendListItem(name) {
+        var s = name;
+        s = s + ' (<a>invite</a>)';
+        s = '<li>' + s + '</li>';
+        return s;
+      }
       $(document).ready(function() {
         $.getJSON("/user/<%= userId %>/friends/get",function(data) {
 	  for (var i=0; i<data.friends.length; i++) {
-	    $("#friend_list").append('<li>'+data.friends[i]+'</li>');
+	    $("#friend_list").append(friendListItem(data.friends[i]));
 	  }
         });
       });
       $(document).ready(function() {
         $("#add_friend_textbox").on("keypress", function(e) {
 	  if (e.keyCode == 13) /* enter key pressed */ {
-	    var tbVal = $("#add_friend_textbox").val();
+	    var friendName = $("#add_friend_textbox").val();
 	    $("#add_friend_textbox").val("");
-	    $("#friend_list").append('<li>'+tbVal+'</li>');
+	    $("#friend_list").append(friendListItem(friendName));
 	    return false; // prevent the keypress from triggering further
 	  }
 	});
