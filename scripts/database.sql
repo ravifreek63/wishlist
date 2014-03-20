@@ -28,7 +28,6 @@ CREATE TABLE `Account_Details` (
   `Type` int(11) DEFAULT NULL,
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `CreationTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `UpdateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `EmailId` varchar(30) DEFAULT NULL,
   `ContactNumber` varchar(30) DEFAULT NULL,
   `Name` varchar(30) DEFAULT NULL,
@@ -57,8 +56,8 @@ CREATE TABLE `Group_Relationships` (
   `RelativeId` varchar(30) DEFAULT NULL,
   `GroupId` int(11) DEFAULT NULL,
   `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(36) DEFAULT NULL,
   `CreationTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `UpdateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -85,7 +84,6 @@ CREATE TABLE `Group_Type` (
   `GroupDescription` varchar(50) DEFAULT NULL,
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `CreationTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `UpdateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -114,7 +112,6 @@ CREATE TABLE `Item_Details` (
   `Category` varchar(30) DEFAULT NULL,
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `CreationTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `UpdateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -140,7 +137,6 @@ CREATE TABLE `User_WishList` (
   `WishListId` varchar(36) DEFAULT NULL,
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `CreationTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `UpdateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -167,7 +163,6 @@ CREATE TABLE `Wish_Group_Visibility` (
   `IsVisible` tinyint(4) DEFAULT NULL,
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `CreationTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `UpdateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -199,7 +194,6 @@ CREATE TABLE `Wish_WishList` (
   `AcquiredBy` varchar(36) DEFAULT NULL,
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `CreationTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `UpdateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `UserId` varchar(36) DEFAULT NULL,
   `Description` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`Id`)
