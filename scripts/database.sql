@@ -56,6 +56,7 @@ CREATE TABLE `Group_Relationships` (
   `RelativeId` varchar(30) DEFAULT NULL,
   `GroupId` int(11) DEFAULT NULL,
   `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(36) DEFAULT NULL,
   `CreationTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
