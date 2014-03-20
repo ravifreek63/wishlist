@@ -11,42 +11,51 @@
         s = s + '<br>';
         s = s + '<button> invite </button>';
         s = s + '<button> edit </button>';
-        var action = "removeFriend('"+name+"','"+itemId+"')";
+        var action = "removeFriend('"+name+"','"+id+"')";
         s = s + '<button onclick='+action+'> delete </button>';
         s = '<div>' + s + '</div>';
         s = '<li id=\''+itemId+'\'>' + s + '</li>';
         return s;
       };
       // Remove a friend
-      function removeFriend(name,itemId) {
-        $.post("/user/<%= userId %>/friends/remove",{'removeFriendWithName':name},
+      function removeFriend(name,id) {
+        var itemId = "friendListItem_"+id;
+        $.post("/user/<%= userId %>/friends/remove",{'name':name,'id':id},
            function(response) { // handles the response
-             // TODO: Check the response to ensure everything worked.
              $("#"+itemId).remove();
            });
       };
-      // Get the user's list of friends and populate the list
+      // When page loads, get the user's list of friends and populate the list
       $(document).ready(function() {
         $.getJSON("/user/<%= userId %>/friends/get",function(data) {
-	  for (var i=0; i<data.friends.length; i++) {
-            var name = data.friends[i];
-	    $("#friend_list").append(friendListItem(name,name));
+          rows = data.response.miscellaneous.rows;
+	  for (var i=0; i<rows.length; i++) {
+            var name = rows[i].Name;
+	    var id = rows[i].Id;
+	    $("#friend_list").append(friendListItem(name,id));
 	  }
         });
       });
-      // Add a friend
+      // Add a friend (when user presses 'enter' in textbox)
       $(document).ready(function() {
         $("#add_friend_textbox").on("keypress", function(e) {
 	  if (e.keyCode == 13) /* enter key pressed */ {
 	    var friendName = $("#add_friend_textbox").val();
 	    $("#add_friend_textbox").val("");
-	    $("#friend_list").append(friendListItem(friendName,friendName));
+            $.post("/user/<%= userId %>/friends/add",{'friendName':friendName},
+		function(response) {
+		  var newContactId = response.response.miscellaneous.rows.insertId;
+		  $("#friend_list").append(friendListItem(friendName,newContactId));
+		}
+	    ,"json");
 	    return false; // prevent the keypress from triggering further
 	  }
 	});
       });
     </script>
   </head>
+
+
   <body>
     <div id="friend_list_div" style="background:aqua; float:left; width:200px; height: 500px; position:relative;">
       <ul id="friend_list">
