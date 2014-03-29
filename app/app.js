@@ -15,6 +15,7 @@ var ownWishList = require('./routes/ownWishList');
 var accounts = require('./routes/accounts');
 var ownFriendList = require('./routes/ownFriendList');
 var home = require('./routes/home');
+var mobile = require('./routes/mobile');
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -65,6 +66,9 @@ app.post('/signIn', accounts.signIn); // login for the user
 /* Home */
 app.get('/home/:userId', home.home);
 app.get('/homedemo/:userId', home.homedemo);
+
+/* Mobile */
+app.post('/mobile/addWish/', mobile.addWish);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
