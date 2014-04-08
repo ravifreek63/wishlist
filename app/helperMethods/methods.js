@@ -41,7 +41,7 @@ var runQuery = function runQuery (resMsg, resMsgErr, query, res){
             console.log (resMsgErr + ":" + error);
 	res.send (JSON.stringify({error: error, response :resObj}));
     };
-    var queryHandler = function (err, rows, fields){
+    var queryHandler = function (err, rows){
         if (err == undefined){
             var qResObj = {
                 rows: rows

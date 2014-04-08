@@ -12,6 +12,7 @@ var path = require('path');
 var data = require('./routes/data');
 var app = express();
 var ownWishList = require('./routes/ownWishList');
+var friendWishList = require('./routes/friendWishList');
 var accounts = require('./routes/accounts');
 var ownFriendList = require('./routes/ownFriendList');
 var home = require('./routes/home');
@@ -58,6 +59,11 @@ app.post('/user/:userId/friends/add', ownFriendList.addFriend); // add a friend
 app.post('/user/:userId/friends/remove', ownFriendList.removeFriend); // remove a friend
 app.post('/user/:userId/friends/invite', ownFriendList.inviteFriend); // invite a friend
 app.post('/user/:userId/friends/edit', ownFriendList.editFriend); // edit a friend
+
+/* APIs to manage at Friend's WishList */
+app.get('/user/:userId/friendListAction/getLists', friendWishList.getWishLists); // for a given user, this api gets the wish list details of all his/her friends
+app.post('/user/:userId/friendListAction/reserveItem', friendWishList.reserveItem); // for a given user, this api reserves an item from a friend's wishlist
+
 
 /* Login/signup routes. */
 app.post('/signUp', accounts.createAccount); // Signup for the user 
