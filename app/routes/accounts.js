@@ -2,13 +2,19 @@ var methods = require('../helperMethods/methods.js');
 var gV = require('../globals/globalVariables.js');
 var string = require('string');
 var connection = require('../data/dataConnection.js').connection;
-/* body : {
-   userObj : {
-   }
-   }
+/*
+ header: Content-type: application/json
+
+ {
+ "userObj": {
+ "name": "ravi",
+ "emailId": "abc@abc.com",
+ "password": "abc"
+ }
+ }
 */
 exports.createAccount = function createAccount (req, res){
-    var userObj = JSON.parse(req.body.userObj);
+    var userObj = (req.body.userObj);
     var name = userObj.name;
     var emailId = string(userObj.emailId).toString().trim();
     var password = userObj.password;
@@ -20,7 +26,7 @@ exports.createAccount = function createAccount (req, res){
     var resMsg = "Successful Creation of User Account";
     var resMsgErr = "Error in User Account Creation";
     // Generating an empty wishlist for this user 
-    var wishListId = methods.genertateUUID ();
+    var wishListId = methods.generateUUID ();
     methods.generateWishList (wishListId, userId, function(err, obj){
 	    if (err == undefined)
 		methods.runQuery(resMsg, resMsgErr, query, res);
@@ -30,7 +36,7 @@ exports.createAccount = function createAccount (req, res){
 };
 
 exports.signIn = function signIn (req, res){
-    var userObj = JSON.parse(req.body.userObj);
+    var userObj = (req.body.userObj);
     var emailId = string(userObj.emailId).toString().trim();
     var password = userObj.password;
     var query = "SELECT * FROM Account_Details where emailId = '" + emailId + "';"

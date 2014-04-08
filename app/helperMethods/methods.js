@@ -44,8 +44,7 @@ var runQuery = function runQuery (resMsg, resMsgErr, query, res){
     var queryHandler = function (err, rows, fields){
         if (err == undefined){
             var qResObj = {
-                rows: rows,
-                fields: fields
+                rows: rows
             };
             createResponse (gV.success.code, resMsg, gV.success.status, qResObj, resCb);
         } else {
@@ -60,13 +59,13 @@ var runQuery = function runQuery (resMsg, resMsgErr, query, res){
 exports.runQuery = runQuery;
 
 var getWishListId = function (userId, callback){
-    var query = "Select * from User_WishList where UserId = '" + userId + "';";
+    var query = "Select * from User_WishList where UserId='" + userId + "';";
     connection.query (query, function(err, rows, fields){
-            if (err = undefined){
-                var wishListId = rows[0].wishListId;
+            if (err == undefined){
+                var wishListId = rows[0].WishListId;
                 callback (undefined, {wishListId: wishListId});
             } else {
-                console.log ("Error in getting wishList Id, error: " + err + "query:" + query);
+                console.log ("Error in getting wishList Id, error: " + err + " query:" + query);
                 callback({msg: err});
             }
 	});

@@ -4,10 +4,10 @@ var methods = require('../helperMethods/methods.js');
 var gV = require('../globals/globalVariables.js');
 
 /*
-  body: {
-    itemId: itemId, 
-    descritpion : ""
-  }
+ {
+ "itemId": "f61827d6-2a21-44ec-8a32-49925e2758e4",
+ "description": "abc"
+ }
 */
 // TODO If itemId does not exist populate the item Id also 
 exports.addItems = function (req, res){
@@ -46,7 +46,7 @@ exports.getItems = function (req, res){
 exports.removeItems = function (req, res){
     var userId = req.params.userId;
     console.log (req.body.items);
-    var items = (JSON.parse (req.body.items)).itemArr;
+    var items = (req.body.items).itemArr;
     var query = "DELETE FROM Wish_WishList where ItemId IN (" + methods.arToStringArray (items) + ") AND UserID = '" + userId + "';";
     var resMsg = "Deleted Items successfully";
     var resMsgErr = "Error in deleting Items";
@@ -70,10 +70,10 @@ exports.removeItems = function (req, res){
 */
 exports.editItems = function (req, res){
     var userId = req.params.userId;
-    var itemObj = req.itemObj;
+    var itemObj = req.body.itemObj;
     var itemId = itemObj.itemId;
     var approxPrice = itemObj.ApproxPrice;
     var description = itemObj.Description;
-    var query = "UPDATE ItemDetails SET (ApproxPrice = '" + itemObj.ApproxPrice +"',Description = '" + itemObj.Description + "') WHERE itemId = '" + itemId + "' AND userId = '" + userId + "';";
+    var query = "UPDATE Item_Details SET Price = '" + itemObj.ApproxPrice +"',ItemDescription = '" + itemObj.Description + "' WHERE ItemId = '" + itemId + "';";
     methods.runQuery ("Items updated successfully", "Error in updating item" , query, res);
 };
