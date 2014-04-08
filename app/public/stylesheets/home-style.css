@@ -12,6 +12,8 @@ body {
  * Global add-ons
  */
 
+
+
 .sub-header {
   padding-bottom: 10px;
   border-bottom: 1px solid #eee;
@@ -72,7 +74,7 @@ body {
   }
 }
 .main .page-header {
-  margin-top: 0;
+  margin-top: 10;
 }
 
 
@@ -94,3 +96,15 @@ body {
   display: inline-block;
   border-radius: 50%;
 }
+
+.image
+{
+    width: 0px; height: 60px;
+    float: left;
+}
+.content
+{
+    margin-left: 1px;
+}
+
+

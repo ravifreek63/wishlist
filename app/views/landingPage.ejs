@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+    <link href="/bootstrap-3.1.1-dist/css/bootstrap.css" rel="Stylesheet">
+    <link href="/stylesheets/home-style.css" rel="stylesheet">
+</head>
+<body>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script>
+    $(function() {
+        $("#login_btn").click(function() {
+            var username = $("input#login_uname").val();
+            var password = $("input#login_passwd").val();
+            var dataString = 'emailId=' + username + '&password=' + password;
+            $.ajax({
+                type: "POST",
+                url: "/signIn",
+                data: dataString,
+                success: function(data) {
+                    var response = $.parseJSON(data).response;
+                    if (response.code == 200){
+                        var userId = response.miscellaneous.userId;
+                        alert(userId);
+                        var url = '/home/' + userId + '/';
+                        $(location).attr('href',url);
+                    }
+                }
+            });
+            return false;
+        });
+
+        $(function() {
+            $("#signup_btn").click(function() {
+                var username = $("input#signup_name").val();
+                var emailId = $('input#signup_emailId').val();
+                var password = $("input#signup_passwd").val();
+                var dataString = 'name=' +  username +  '&emailId=' + emailId + '&password=' + password;
+                $.ajax({
+                    type: "POST",
+                    url: "/signUp",
+                    data: dataString,
+                    success: function(data) {
+                        var response = $.parseJSON(data).response;
+                        if (response.code == 200){
+                            console.log (data);
+                            var userId = response.miscellaneous.userId;
+                            alert(userId);
+                            var url = '/home/' + userId + '/';
+                            $(location).attr('href',url);
+                        }
+                    }
+                });
+                return false;
+            });
+        });
+    });
+</script>
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div>
+        <form accept-charset="UTF-8" role="form" name="login_form">
+                <div class="wrap">
+                    <input class="form-control-nav form-control-nav-uname" placeholder="Username" id = "login_uname" name="username" type="text">
+                    <input class="form-control-nav form-control-nav-password" placeholder="Password" id="login_passwd" name="password" type="text">
+                    <input type="submit" class="btn-nav" type="submit" value="Login" id="login_btn">
+                </div>
+
+        </form>
+    </div>
+    <div class="container-fluid">
+        <div class="navbar-header">
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right"> </ul>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <!-- The main content area -->
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div class="page-header">
+                <h1 style="display:inline-block;"> Welcome to WishFor </h1>
+            </div>
+            <div class="container">
+                <div class ="image">
+                    <img src="images/gift.jpeg">
+                </div>
+                <div class="content">
+                    <div class="col-md-4 col-md-offset-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Sign up</h3>
+                            </div>
+                            <div class="panel-body">
+                                <form accept-charset="UTF-8" role="form" id="signup_form">
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <input class="form-control" placeholder="Name" name="name" type="text" id="signup_name">
+                                        </div>
+                                        <div class="form-group">
+                                            <input class="form-control" placeholder="E-mail" name="email" type="text" id="signup_emailId">
+                                        </div>
+                                        <div class="form-group">
+                                            <input class="form-control" placeholder="Password" name="password" type="password" value="" id="signup_passwd">
+                                        </div>
+                                        <div class="checkbox">
+                                        </div>
+                                        <input class="btn btn-lg btn-success btn-block" type="submit" value="Sign Up" id="signup_btn">
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Scripts placed at end to help pages load faster -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
+
+<!-- This seems irrelevant. <script src="/bootstrap-3.1.1-dist/js/docs.min.js"></script> -->
+
+
+</body>
+</html>

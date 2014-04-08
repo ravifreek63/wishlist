@@ -14,10 +14,9 @@ var connection = require('../data/dataConnection.js').connection;
  }
 */
 exports.createAccount = function createAccount (req, res){
-    var userObj = (req.body.userObj);
-    var name = userObj.name;
-    var emailId = string(userObj.emailId).toString().trim();
-    var password = userObj.password;
+    var name = req.body.name;
+    var emailId = string(req.body.emailId).toString().trim();
+    var password = req.body.password;
     var type = 2; // Normal User is 2, Admin is type 1
     var userId = methods.generateUUID (); // Check for duplicate UUID
     var query = "INSERT INTO Account_Details (UserId, Password, Type, EmailId, Name) VALUES ('"+
@@ -27,25 +26,41 @@ exports.createAccount = function createAccount (req, res){
     var resMsgErr = "Error in User Account Creation";
     // Generating an empty wishlist for this user 
     var wishListId = methods.generateUUID ();
-    methods.generateWishList (wishListId, userId, function(err, obj){
-	    if (err == undefined)
-		methods.runQuery(resMsg, resMsgErr, query, res);
-	    else 
-		res.send (err);
-   });
+    var sendResponse = function (err, obj) {
+        res.send(JSON.stringify({
+            error: err,
+            response: obj
+        }));
+    }
+        methods.generateWishList(wishListId, userId, function (err) {
+            if (err == undefined) {
+                connection.query(query, function (err) {
+                    if (err == undefined) {
+                        methods.createResponse(gV.success.code, "Account Creation Successful",
+                            gV.success.status, {userId: userId}, sendResponse);
+                    } else {
+                        methods.createResponse(gV.failure.code, "Account Creation Failed",
+                            gV.failure.status, {}, sendResponse);
+                    }
+                });
+            }
+            else {
+                methods.createResponse(gV.failure.code, "Account Creation Failed",
+                    gV.failure.status, {}, sendResponse);
+            }
+        });
 };
 
 exports.signIn = function signIn (req, res){
-    var userObj = (req.body.userObj);
-    var emailId = string(userObj.emailId).toString().trim();
-    var password = userObj.password;
+    var emailId = string(req.body.emailId).toString().trim();
+    var password = req.body.password;
     var query = "SELECT * FROM Account_Details where emailId = '" + emailId + "';"
     connection.query (query, function(err, rows, fields){
 	    if (err == undefined){
 		if (rows && rows.length > 0){
 		    if (password == rows[0].Password){
 			methods.createResponse (gV.success.code, "Login Successful", 
-						gV.success.status, {}, sendResponse);
+						gV.success.status, {userId: rows[0].UserId}, sendResponse);
 		    } else {
 			methods.createResponse(gV.failure.code, "Login Failed, Password did not match", 
 					       gV.failure.status, {}, sendResponse);
