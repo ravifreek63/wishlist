@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+    <link href="/bootstrap-3.1.1-dist/css/bootstrap.css" rel="Stylesheet">
+    <link href="/stylesheets/home-style.css" rel="stylesheet">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+</head>
+<body>
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <!-- The sidebar -->
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul id="friend_list" class="nav nav-sidebar">
+                <li class="active">
+                    <a href="#">Myself</a>
+                </li>
+            </ul>
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Add someone...">
+	    <span class="input-group-btn">
+	      <button class="btn btn-default" type="button">+</button>
+	    </span>
+            </div>
+            <!--	  <div id="add_someone_div" style="position:absolute; bottom:0;">
+                    Add someone:
+                        <input type="text" id="add_friend_textbox" style="width:150px">
+                    </input>
+                  </div>-->
+        </div>
+        <script>
+            var wishes = <%- JSON.stringify((wishes)) %>
+
+        </script>
+        <!-- The main content area -->
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div class="page-header">
+                <h2 style="display:inline-block;"> Welcome <%=name%> </h2>
+
+
+            </div>
+            <h2> Oscar's gift ideas </h2>
+            <div style="margin-left:30px;">
+                <p> You must <a href="#">invite</a> Oscar to get his ideas!</p>
+                <p> Oscar currently has no ideas. </p>
+                <p>
+                    <a href="#">Ask</a> Oscar for more ideas.
+                </p>
+            </div>
+            <h2> Your ideas for Oscar </h2>
+            <div style="margin-left:30px;">
+                Write down an idea you have before you forget! (We won't tell anyone unless you want us to ask Oscar.)
+                <div class="input-group col-sm-5">
+                    <input type="text" class="form-control" placeholder="Add an idea...">
+	      <span class="input-group-btn">
+		<button class="btn btn-default" type="button">+</button>
+	      </span>
+                </div>
+            </div>
+            <h2> Our suggestions for Oscar </h2>
+            <div style="margin-left:30px;">
+                <p> To improve our suggestions, <a href="#">tell us more</a> about Oscar.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Scripts placed at end to help pages load faster -->
+<script src="/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
+<!-- This seems irrelevant. <script src="/bootstrap-3.1.1-dist/js/docs.min.js"></script> -->
+
+
+<script>
+    // Define a list item
+    function friendListItemOld(name,id) {
+        var s = name;
+        s = '<a href="#">' + s + '</a>'
+        s = s + '<br>';
+        s = s + '<button> invite </button>';
+        s = s + '<button> edit </button>';
+        var action = "removeFriend('"+name+"','"+id+"')";
+        s = s + '<button onclick='+action+'> delete </button>';
+        s = '<div>' + s + '</div>';
+        var itemId = "friendListItem_"+id;
+        s = '<li id=\''+itemId+'\'>' + s + '</li>';
+        return s;
+    };
+    function friendListItem(name,id) {
+        var s = name;
+        s = '<a href="#">' + s + '</a>'
+        var itemId = "friendListItem_"+id;
+        s = '<li id=\''+itemId+'\'>' + s + '</li>';
+        return s;
+    };
+
+    // Remove a friend
+    function removeFriend(name,id) {
+        var itemId = "friendListItem_"+id;
+        $.post("/user/<%= userId %>/friends/remove",{'name':name,'id':id},
+                function(response) { // handles the response
+                    $("#"+itemId).remove();
+                });
+    };
+
+
+    // When page loads, get the user's list of friends and populate the list
+    $(document).ready(function() {
+        $.getJSON("/user/<%= userId %>/friends/get",function(data) {
+            rows = data.response.miscellaneous.rows;
+            for (var i=0; i<rows.length; i++) {
+                var name = rows[i].Name;
+                var id = rows[i].Id;
+                $("#friend_list").append(friendListItem(name,id));
+            }
+        });
+
+
+    });
+
+
+    // Add a friend (when user presses 'enter' in textbox)
+    $(document).ready(function() {
+        $("#add_friend_textbox").on("keypress", function(e) {
+            if (e.keyCode == 13) /* enter key pressed */ {
+                var friendName = $("#add_friend_textbox").val();
+                $("#add_friend_textbox").val("");
+                $.post("/user/<%= userId %>/friends/add",{'friendName':friendName},
+                        function(response) {
+                            var newContactId = response.response.miscellaneous.rows.insertId;
+                            $("#friend_list").append(friendListItem(friendName,newContactId));
+                        }
+                        ,"json");
+                return false; // prevent the keypress from triggering further
+            }
+        });
+    });
+</script>
+
+
+</body>
+</html>

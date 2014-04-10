@@ -2,8 +2,10 @@
 <html>
   <head>
     <title>Home</title>
-    <link href="/bootstrap-3.1.1-dist/css/bootstrap.min.css" rel="Stylesheet">
+      <script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js"></script>
+    <link href="/bootstrap-3.1.1-dist/css/bootstrap.css" rel="Stylesheet">
     <link href="/stylesheets/home-style.css" rel="stylesheet">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   </head>
   <body>
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -40,54 +42,146 @@
 	    </input>
 	  </div>-->
 	</div>
+    <script>
+        $(function() {
+            $("#addItem").click(function() {
+                var itemName = $("input#ItemName_Modal").val();
+                var itemDescription = $('input#ItemDescription_Modal').val();
+                var preferredBrand = $("input#PreferredBrand_Modal").val();
+                var approximatePrice = $("input#ApproximatePrice_Modal").val();
+                var dataString = 'itemName=' +  itemName +  '&description=' + itemDescription + '&preferredBrand=' +
+                        preferredBrand + '&approximatePrice=' + approximatePrice;
+                $.ajax({
+                    type: "POST",
+                    url: "/user/<%= userId %>/items/add",
+                    data: dataString,
+                    success: function(data) {
+                        var response = $.parseJSON(data).response;
+                        if (response.code == 200) {
+                            // show response
+                            location.reload();
+                        }
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+
 	<!-- The main content area -->
 	<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 	  <div class="page-header">
-            <h1 style="display:inline-block;"> Oscar </h1>
-	    <span class="col-sm-offset-9">
-	    (
-	    <a href="#"> Edit </a>
-	    ,
-	    <a href="#"> Remove </a>
-	    )
-	    </span>
+            <h2 style="display:inline-block;"> <%=name%>'s wishlist </h2>
 	  </div>
-	  <div class="alert alert-warning alert-dismissable" style="width:500px;">
-	    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-	    <strong> Oscar hasn't been invited. </strong>
-	    You must <a href="#">invite</a> Oscar to get his ideas!
-	  </div>
-	  <h2> Oscar's gift ideas </h2>
-	  <div style="margin-left:30px;">
-	    <p> You must <a href="#">invite</a> Oscar to get his ideas!</p>
-	    <p> Oscar currently has no ideas. </p>
-	    <p>
-	      <a href="#">Ask</a> Oscar for more ideas.
-	    </p>
-	  </div>
-	  <h2> Your ideas for Oscar </h2>
-	  <div style="margin-left:30px;">
-	    Write down an idea you have before you forget! (We won't tell anyone unless you want us to ask Oscar.)
-	    <div class="input-group col-sm-5">
-	      <input type="text" class="form-control" placeholder="Add an idea...">
-	      <span class="input-group-btn">
-		<button class="btn btn-default" type="button">+</button>
-	      </span>
-	    </div>
-	  </div>
-	  <h2> Our suggestions for Oscar </h2>
-	  <div style="margin-left:30px;">
-	    <p> To improve our suggestions, <a href="#">tell us more</a> about Oscar.</p>
-	  </div>
-	</div>
-      </div>
+        <div>
+          <table class="table table-striped table-bordered table-condensed" id="wishlistTable" style="text-align: center">
+          </table>
+         </div>
     </div>
+          <script>
+              var wishes = <%- JSON.stringify((wishes)) %>
+              console.log(wishes[0]);
+               console.log (wishes);
 
+              // Find a <table> element with id="myTable":
+              var table = document.getElementById("wishlistTable");
+              for (var count = 0; count < wishes.length; count++) {
+                  // Create an empty <tr> element and add it to the 1st position of the table:
+                  var row = table.insertRow(0);
+
+                  // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                  var cell1 = row.insertCell(0);
+                  var cell2 = row.insertCell(1);
+                  var cell3 = row.insertCell(2);
+                  var cell4 = row.insertCell(3);
+                  var cell5 = row.insertCell(4);
+                  var cell6 = row.insertCell(5);
+
+                  // Add some text to the new cells:
+                  cell1.innerHTML = wishes[count].ItemName;
+                  cell2.innerHTML = wishes[count].Description;
+                  cell3.innerHTML = wishes[count].PreferredBrand;
+                  cell4.innerHTML = "$ "+wishes[count].ApproxPrice;
+                  cell5.innerHTML = moment(wishes[count].CreationTime).format('MMMM Do YYYY, h:mm:ss a');
+                  var button = '<input type="button" id="button_'+wishes[count].ItemId+'" class="btn btn-danger btn-mini" value="Delete"></input>';
+                  cell6.innerHTML = button;
+              }
+
+              if (wishes.length > 0){
+                  var row = table.insertRow(0);
+                  // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                  var cell1 = row.insertCell(0);
+                  var cell2 = row.insertCell(1);
+                  var cell3 = row.insertCell(2);
+                  var cell4 = row.insertCell(3);
+                  var cell5 = row.insertCell(4);
+                  var cell6 = row.insertCell(5);
+
+                  // Add some text to the new cells:
+                  cell1.innerHTML = "<b>Item Name</b>";
+                  cell2.innerHTML = "<b>Item Description</b>";
+                  cell3.innerHTML = "<b>Preferred Brand</b>";
+                  cell4.innerHTML = "<b>Approx Price</b>";
+                  cell5.innerHTML = "<b>Date Added </b>";
+                  cell6.innerHTML = "Manage";
+
+              }
+              var doButtonPress = function( i ) {
+                  $.post("/user/<%= userId %>/items/remove",{'items': [i]},
+                          function(response) { // handles the response
+                              location.reload();
+                          });
+              };
+
+              //yes, mybuttons exist
+              $('.btn-danger').click(function () {
+                  doButtonPress(this.id.replace('button_', ''));
+              });
+          </script>
+
+          <button class="btn btn-primary btn-large" style="margin-left:260px; margin-top: -20px; width:200px" data-target="#addItemModal" data-toggle="modal">
+              <i class="icon-white icon-plus"></i> Add an item </button>
+
+
+          <!-- Modal -->
+          <div class="modal fade" id="addItemModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                          <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                      </div>
+                      <div class="modal-body">
+                          <form accept-charset="UTF-8" role="form" id="addItemForm">
+                              <fieldset>
+                                  <div class="form-group">
+                                      <input class="form-control" placeholder="Item Name" name="ItemName" type="text" id="ItemName_Modal">
+                                  </div>
+                                  <div class="form-group">
+                                      <input class="form-control" placeholder="Item Description" name="ItemDescription" type="text" id="ItemDescription_Modal">
+                                  </div>
+                                  <div class="form-group">
+                                      <input class="form-control" placeholder="Approximate Price" name="ApproximatePrice" type="text" id="ApproximatePrice_Modal">
+                                  </div>
+                                  <div class="form-group">
+                                      <input class="form-control" placeholder="Preferred Brand" name="PreferredBrand" type="text" id="PreferredBrand_Modal">
+                                  </div>
+
+                              </fieldset>
+                          </form>
+                      </div>
+                      <div class="modal-footer">
+                          <button type="submit" class="btn btn-primary" id="addItem">Add An Item</button>
+                          <button type="button"  class="btn btn-default" data-dismiss="modal">Cancel</button>
+
+                      </div>
+                  </div>
+              </div>
+          </div>
 
     <!-- Scripts placed at end to help pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
-    <!-- This seems irrelevant. <script src="/bootstrap-3.1.1-dist/js/docs.min.js"></script> -->
+
 
 
     <script>
@@ -121,6 +215,8 @@
              $("#"+itemId).remove();
            });
       };
+
+
       // When page loads, get the user's list of friends and populate the list
       $(document).ready(function() {
         $.getJSON("/user/<%= userId %>/friends/get",function(data) {
@@ -131,7 +227,11 @@
 	    $("#friend_list").append(friendListItem(name,id));
 	  }
         });
+
+
       });
+
+
       // Add a friend (when user presses 'enter' in textbox)
       $(document).ready(function() {
         $("#add_friend_textbox").on("keypress", function(e) {

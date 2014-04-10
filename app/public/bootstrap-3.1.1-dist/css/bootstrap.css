@@ -250,6 +250,8 @@ th {
   }
   .table {
     border-collapse: collapse !important;
+    text-align:center;
+    vertical-align:middle;
   }
   .table-bordered th,
   .table-bordered td {
@@ -1403,9 +1405,10 @@ pre code {
 table {
   max-width: 100%;
   background-color: transparent;
+
 }
 th {
-  text-align: left;
+  text-align: center;
 }
 .table {
   width: 100%;
@@ -3357,12 +3360,12 @@ input[type="button"].btn-block {
 .input-group[class*="col-"] {
   float: none;
   padding-right: 0;
-  padding-left: 0;
+  padding-left: 100;
 }
 .input-group .form-control {
   position: relative;
   z-index: 2;
-  float: left;
+  float: right;
   width: 100%;
   margin-bottom: 0;
 }

@@ -71,7 +71,7 @@ app.post('/signUp', accounts.createAccount); // Signup for the user
 app.post('/signIn', accounts.signIn); // login for the user
 
 /* Home */
-app.get('/home/:userId', home.home);
+app.get('/home/user/:userId', home.home);
 app.get('/homedemo/:userId', home.homedemo);
 
 /* Mobile */
