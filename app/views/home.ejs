@@ -93,7 +93,7 @@
     </div>
           <script>
 
-              function fillTable(wishes) {
+              function fillTable(wishes, viewFriend) {
                   // Find a <table> element with id="myTable":
                   var table = document.getElementById("wishlistTable");
                   var tableRows = table.getElementsByTagName('tr');
@@ -122,7 +122,14 @@
                       cell3.innerHTML = wishes[count].PreferredBrand;
                       cell4.innerHTML = "$ "+wishes[count].ApproxPrice;
                       cell5.innerHTML = moment(wishes[count].CreationTime).format('MMMM Do YYYY, h:mm:ss a');
-                      var button = '<input type="button" id="button_'+wishes[count].ItemId+'" class="btn btn-danger btn-mini" value="Delete"></input>';
+                      if (viewFriend == 0)
+                        var button = '<input type="button" id="button_'+ wishes[count].ItemId+'" class="btn btn-danger ' +
+                                'btn-mini btn-deleteItem" value="Delete"></input>';
+                      else if (viewFriend == 1) {
+                          var action = "reserveItem('"+ wishes[count].WishId +"')";
+                          var button = '<input type="button" onclick='+action+' id="button_' + wishes[count].ItemId + '"' +
+                                  'class="btn btn-info btn-mini btn-reserveItem" value="Reserve"></input>';
+                      }
                       cell6.innerHTML = button;
                   }
 
@@ -148,19 +155,23 @@
               }
 
               var wishes = <%- JSON.stringify((wishes)) %>
-              fillTable(wishes);
+              fillTable(wishes, 0);
 
-              var doButtonPress = function( i ) {
-                  $.post("/user/<%= userId %>/items/remove",{'items': [i]},
+              $('.btn-deleteItem').click(function () {
+                 var id = this.id.replace('button_', '');
+                  $.post("/user/<%= userId %>/items/remove",{'items': [id]},
                           function(response) { // handles the response
                               location.reload();
                           });
-              };
-
-              //yes, mybuttons exist
-              $('.btn-danger').click(function () {
-                  doButtonPress(this.id.replace('button_', ''));
               });
+
+              function reserveItem(wishId){
+                  $.post("/user/<%= userId%>/friendListAction/reserveItem", {'wishId': wishId}, function(response){
+                        console.log (response);
+                        alert("here");
+                  });
+              }
+
           </script>
 
           <button class="btn btn-primary btn-large" style="margin-left:260px; margin-top: -20px; width:200px" data-target="#addItemModsal" data-toggle="modal">
@@ -241,7 +252,7 @@
                   function(response) {
                       var jsonR = $.parseJSON(response).response;
                       if (jsonR.code == 200)
-                        fillTable (jsonR.miscellaneous.rows);
+                        fillTable (jsonR.miscellaneous.rows, 1);
                   });
       };
 

@@ -65,9 +65,8 @@ exports.getWishLists = function(req, res){
 exports.reserveItem = function (req, res){
     var userId = req.params.userId;
     var wishId = req.body.wishId;
-    var friendId = req.body.friendId;
     var query = "UPDATE Wish_WishList SET IsReserved = 1, ReservedBy='" + userId
-                 + "' where WishId = '" + wishId + "' AND UserId = '" + friendId + "';";
+                 + "' where WishId = '" + wishId + "';";
     var resMsg = "Updated Items successfully";
     var resMsgErr = "Error in updating Items";
     methods.runQuery (resMsg, resMsgErr, query, res);
