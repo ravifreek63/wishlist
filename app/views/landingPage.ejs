@@ -21,7 +21,6 @@
                     var response = $.parseJSON(data).response;
                     if (response.code == 200){
                         var userId = response.miscellaneous.userId;
-                        alert(userId);
                         var url = '/home/user/' + userId + '/';
                         $(location).attr('href',url);
                     }
