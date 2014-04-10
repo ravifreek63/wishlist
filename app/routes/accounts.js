@@ -59,7 +59,8 @@ exports.signIn = function signIn (req, res){
 	    if (err == undefined){
 		if (rows && rows.length > 0){
 		    if (password == rows[0].Password){
-			methods.createResponse (gV.success.code, "Login Successful", 
+                req.session.userId = rows[0].UserId;
+                    methods.createResponse (gV.success.code, "Login Successful",
 						gV.success.status, {userId: rows[0].UserId}, sendResponse);
 		    } else {
 			methods.createResponse(gV.failure.code, "Login Failed, Password did not match", 

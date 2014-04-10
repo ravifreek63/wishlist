@@ -48,6 +48,7 @@
     <script>
         $(function(){
             $("#logout_btn").click(function(){
+                $.post('/logout', {}, function(){});
                 $(location).attr('href',"/");
             });
         });
@@ -168,7 +169,6 @@
               function reserveItem(wishId){
                   $.post("/user/<%= userId%>/friendListAction/reserveItem", {'wishId': wishId}, function(response){
                         console.log (response);
-                        alert("here");
                   });
               }
 
@@ -248,7 +248,7 @@
       };
 
       var getFriendsItems = function( i ) {
-      $.get("/user/" + i + "/items/get",{},
+      $.get("/user/<%=userId%>/items/"+ i +"/getFriend",{},
                   function(response) {
                       var jsonR = $.parseJSON(response).response;
                       if (jsonR.code == 200)

@@ -46,9 +46,41 @@ app.get('/list_names', john_test.list_names_handler);
 app.get('/get_user', data.dataHandler);
 app.get('/remove_user', john_test.remove_user_handler);
 
+/* Login/signup routes. */
+app.post('/signUp', accounts.createAccount); // Signup for the user
+app.post('/signIn', accounts.signIn); // login for the user
+
+/* Home */
+
+app.get('/homedemo/:userId', home.homedemo);
+
+app.post('/logout', home.logout);
+
+/* Mobile */
+app.post('/mobile/addWish/', mobile.addWish);
+
+/* Interception layer where we check for user session. This implies that all the subsequent requests are secure. */
+app.get('*', function(req, res, next){
+    if (req.url.indexOf('.jpeg') >= 0 || req.url.indexOf('.css') >= 0 || req.url.indexOf('.js') >= 0){
+        next();
+    } else if (typeof req.session == 'undefined' || typeof req.session.userId=='undefined'){
+        res.redirect("");
+    } else {
+        var filteredUrl = req.url.substring(req.url.indexOf('/user/') + 6, req.url.length);
+        var userId = filteredUrl.substring(0, filteredUrl.indexOf('/'));
+        console.log ("userId:" + userId);
+        if (req.session.userId != userId){
+            req.redirect ('/');
+        } else {
+            next();
+        }
+    }
+});
 /* Wish list routes. */
+app.get('/home/user/:userId', home.home);
 app.post('/user/:userId/items/add', ownWishList.addItems); // add items to own wish list , single item 
-app.get('/user/:userId/items/get', ownWishList.getItems);  // get all the items , bulk query 
+app.get('/user/:userId/items/get', ownWishList.getItems);  // get all the items , bulk query
+app.get('/user/:userId/items/:friendId/getFriend', ownWishList.getItemsFriend);  // get all the items , bulk query
 app.post('/user/:userId/items/edit', ownWishList.editItems); // edit an item in the wishlist 
 app.post('/user/:userId/items/remove', ownWishList.removeItems); // remove an item from the wishlist , bulk query
 
@@ -64,18 +96,6 @@ app.post('/user/:userId/friends/edit', ownFriendList.editFriend); // edit a frie
 //app.get()
 app.get('/user/:userId/friendListAction/getLists', friendWishList.getWishLists); // for a given user, this api gets the wish list details of all his/her friends
 app.post('/user/:userId/friendListAction/reserveItem', friendWishList.reserveItem); // for a given user, this api reserves an item from a friend's wishlist
-
-
-/* Login/signup routes. */
-app.post('/signUp', accounts.createAccount); // Signup for the user 
-app.post('/signIn', accounts.signIn); // login for the user
-
-/* Home */
-app.get('/home/user/:userId', home.home);
-app.get('/homedemo/:userId', home.homedemo);
-
-/* Mobile */
-app.post('/mobile/addWish/', mobile.addWish);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

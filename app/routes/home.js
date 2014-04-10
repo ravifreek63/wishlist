@@ -7,12 +7,10 @@ var gV = require('../globals/globalVariables.js');
  */
 
 exports.home = function(req, res){
-    console.log ("rendering home");
     var userId = req.params.userId;
     var query = "SELECT Name,ContactNumber,EmailId from Account_Details where UserId = '" + userId + "' LIMIT 1;";
     console.log (query);
     var query1 = "SELECT * from Wish_WishList AS W JOIN Item_Details AS I ON W.ItemId = I.ItemId where UserId= '" + userId + "';";
-    console.log (query1);
     function queryHandler(err, rows) {
         if (err == undefined) {
             function queryHandler1(err1, rows1){
@@ -30,4 +28,11 @@ exports.home = function(req, res){
 exports.homedemo = function(req, res){
     var userId = req.params.userId;
     res.render('homedemo', { userId: userId });
+};
+
+exports.logout = function(req, res){
+    req.session.destroy(function(){
+        res.send("logged out");
+    });
+
 };

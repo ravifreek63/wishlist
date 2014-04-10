@@ -42,7 +42,8 @@ exports.getWishLists = function(req, res){
         if (err == undefined){
             if (rows.length > 0) {
                 var friends = getFriendIds (rows);
-                var query1 = "SELECT * FROM Wish_WishList As W JOIN Item_Details As I ON I.ItemId = W.ItemId AND W.UserId In (" + methods.arToStringArray (friends) + ");";
+                var query1 = "SELECT * FROM Wish_WishList As W JOIN Item_Details As I ON I.ItemId = W.ItemId AND W.UserId In " +
+                    "(" + methods.arToStringArray (friends) + " AND W.IsReserved = '0');";
                 console.log ("running query:" + query1);
                 connection.query(query1, queryHandler2);
             } else {
@@ -58,7 +59,6 @@ exports.getWishLists = function(req, res){
         }
     }
     connection.query(query, queryHandler);
-
 };
 
 
