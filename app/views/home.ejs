@@ -15,7 +15,7 @@
 	<div class="navbar-collapse collapse">
 	  <ul class="nav navbar-nav navbar-right">
 	    <li>
-	      <a href="#">Logout</a>
+            <a href="#" class="btn btn-inverse btn-small" id="logout_btn">Logout</a>
 	    </li>
 	  </ul>
 	</div>
@@ -43,6 +43,11 @@
 	  </div>-->
 	</div>
     <script>
+        $(function(){
+            $("#logout_btn").click(function(){
+                $(location).attr('href',"/");
+            });
+        });
         $(function() {
             $("#addItem").click(function() {
                 var itemName = $("input#ItemName_Modal").val();
