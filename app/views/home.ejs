@@ -13,11 +13,14 @@
 	<div class="navbar-header">
 	</div>
 	<div class="navbar-collapse collapse">
-	  <ul class="nav navbar-nav navbar-right">
-	    <li>
-            <a href="#" class="btn btn-inverse btn-small" id="logout_btn">Logout</a>
-	    </li>
-	  </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                <a href="#" class="btn btn-inverse btn-small" id="logout_btn">Logout</a>
+            </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+           <li><a href="#" class="btn btn-inverse btn-small" id="home_btn">Home</a></li>
+         </ul>
 	</div>
       </div>
     </div>
@@ -46,6 +49,11 @@
         $(function(){
             $("#logout_btn").click(function(){
                 $(location).attr('href',"/");
+            });
+        });
+        $(function(){
+            $("#home_btn").click(function(){
+                $(location).attr('href',"/home/user/<%= userId %>");
             });
         });
         $(function() {
@@ -84,53 +92,64 @@
          </div>
     </div>
           <script>
+
+              function fillTable(wishes) {
+                  // Find a <table> element with id="myTable":
+                  var table = document.getElementById("wishlistTable");
+                  var tableRows = table.getElementsByTagName('tr');
+                  var rowCount = tableRows.length;
+
+                  for (var x=rowCount-1; x>-1; x--) {
+                      table.deleteRow (x);
+                  }
+
+
+                  for (var count = 0; count < wishes.length; count++) {
+                      // Create an empty <tr> element and add it to the 1st position of the table:
+                      var row = table.insertRow(0);
+
+                      // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                      var cell1 = row.insertCell(0);
+                      var cell2 = row.insertCell(1);
+                      var cell3 = row.insertCell(2);
+                      var cell4 = row.insertCell(3);
+                      var cell5 = row.insertCell(4);
+                      var cell6 = row.insertCell(5);
+
+                      // Add some text to the new cells:
+                      cell1.innerHTML = wishes[count].ItemName;
+                      cell2.innerHTML = wishes[count].Description;
+                      cell3.innerHTML = wishes[count].PreferredBrand;
+                      cell4.innerHTML = "$ "+wishes[count].ApproxPrice;
+                      cell5.innerHTML = moment(wishes[count].CreationTime).format('MMMM Do YYYY, h:mm:ss a');
+                      var button = '<input type="button" id="button_'+wishes[count].ItemId+'" class="btn btn-danger btn-mini" value="Delete"></input>';
+                      cell6.innerHTML = button;
+                  }
+
+                  if (wishes.length > 0){
+                      var row = table.insertRow(0);
+                      // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                      var cell1 = row.insertCell(0);
+                      var cell2 = row.insertCell(1);
+                      var cell3 = row.insertCell(2);
+                      var cell4 = row.insertCell(3);
+                      var cell5 = row.insertCell(4);
+                      var cell6 = row.insertCell(5);
+
+                      // Add some text to the new cells:
+                      cell1.innerHTML = "<b>Item Name</b>";
+                      cell2.innerHTML = "<b>Item Description</b>";
+                      cell3.innerHTML = "<b>Preferred Brand</b>";
+                      cell4.innerHTML = "<b>Approx Price</b>";
+                      cell5.innerHTML = "<b>Date Added </b>";
+                      cell6.innerHTML = "Manage";
+
+                  }
+              }
+
               var wishes = <%- JSON.stringify((wishes)) %>
-              console.log(wishes[0]);
-               console.log (wishes);
+              fillTable(wishes);
 
-              // Find a <table> element with id="myTable":
-              var table = document.getElementById("wishlistTable");
-              for (var count = 0; count < wishes.length; count++) {
-                  // Create an empty <tr> element and add it to the 1st position of the table:
-                  var row = table.insertRow(0);
-
-                  // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
-                  var cell1 = row.insertCell(0);
-                  var cell2 = row.insertCell(1);
-                  var cell3 = row.insertCell(2);
-                  var cell4 = row.insertCell(3);
-                  var cell5 = row.insertCell(4);
-                  var cell6 = row.insertCell(5);
-
-                  // Add some text to the new cells:
-                  cell1.innerHTML = wishes[count].ItemName;
-                  cell2.innerHTML = wishes[count].Description;
-                  cell3.innerHTML = wishes[count].PreferredBrand;
-                  cell4.innerHTML = "$ "+wishes[count].ApproxPrice;
-                  cell5.innerHTML = moment(wishes[count].CreationTime).format('MMMM Do YYYY, h:mm:ss a');
-                  var button = '<input type="button" id="button_'+wishes[count].ItemId+'" class="btn btn-danger btn-mini" value="Delete"></input>';
-                  cell6.innerHTML = button;
-              }
-
-              if (wishes.length > 0){
-                  var row = table.insertRow(0);
-                  // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
-                  var cell1 = row.insertCell(0);
-                  var cell2 = row.insertCell(1);
-                  var cell3 = row.insertCell(2);
-                  var cell4 = row.insertCell(3);
-                  var cell5 = row.insertCell(4);
-                  var cell6 = row.insertCell(5);
-
-                  // Add some text to the new cells:
-                  cell1.innerHTML = "<b>Item Name</b>";
-                  cell2.innerHTML = "<b>Item Description</b>";
-                  cell3.innerHTML = "<b>Preferred Brand</b>";
-                  cell4.innerHTML = "<b>Approx Price</b>";
-                  cell5.innerHTML = "<b>Date Added </b>";
-                  cell6.innerHTML = "Manage";
-
-              }
               var doButtonPress = function( i ) {
                   $.post("/user/<%= userId %>/items/remove",{'items': [i]},
                           function(response) { // handles the response
@@ -144,7 +163,7 @@
               });
           </script>
 
-          <button class="btn btn-primary btn-large" style="margin-left:260px; margin-top: -20px; width:200px" data-target="#addItemModal" data-toggle="modal">
+          <button class="btn btn-primary btn-large" style="margin-left:260px; margin-top: -20px; width:200px" data-target="#addItemModsal" data-toggle="modal">
               <i class="icon-white icon-plus"></i> Add an item </button>
 
 
@@ -204,12 +223,26 @@
         s = '<li id=\''+itemId+'\'>' + s + '</li>';
         return s;
       };
+
       function friendListItem(name,id) {
-        var s = name;
-        s = '<a href="#">' + s + '</a>'
-        var itemId = "friendListItem_"+id;
-        s = '<li id=\''+itemId+'\'>' + s + '</li>';
-        return s;
+          var s = name;
+          s = '<a href="#">' + s + '</a>'
+          s = s + '<br>';
+          var action = "getFriendsItems('"+id+"')";
+          s = s + '<button onclick='+action+'>view </button>';
+          s = '<div>' + s + '</div>';
+          var itemId = "friendListItem_"+id;
+          s = '<li id=\''+itemId+'\'>' + s + '</li>';
+          return s;
+      };
+
+      var getFriendsItems = function( i ) {
+      $.get("/user/" + i + "/items/get",{},
+                  function(response) {
+                      var jsonR = $.parseJSON(response).response;
+                      if (jsonR.code == 200)
+                        fillTable (jsonR.miscellaneous.rows);
+                  });
       };
 
       // Remove a friend
@@ -226,16 +259,14 @@
       $(document).ready(function() {
         $.getJSON("/user/<%= userId %>/friends/get",function(data) {
           rows = data.response.miscellaneous.rows;
+            console.log(rows);
 	  for (var i=0; i<rows.length; i++) {
             var name = rows[i].Name;
-	        var id = rows[i].Id;
-	    $("#friend_list").append(friendListItem(name,id));
+	        var id = rows[i].UserId;
+	        $("#friend_list").append(friendListItem(name,id));
 	    }
         });
-
-
       });
-
 
       // Add a friend (when user presses 'enter' in textbox)
       $(document).ready(function() {
