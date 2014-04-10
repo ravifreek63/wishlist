@@ -7,11 +7,15 @@
 </head>
 <body>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="/scripts/jquery.md5.js"></script>
 <script>
     $(function() {
         $("#login_btn").click(function() {
-            var username = $("input#login_uname").val();
-            var password = $("input#login_passwd").val();
+            var username = $("input#login_uname").val().trim();
+            alert(username);
+            var password = $.md5($("input#login_passwd").val().trim());
+            console.log(password);
+            alert(password);
             var dataString = 'emailId=' + username + '&password=' + password;
             $.ajax({
                 type: "POST",
@@ -31,9 +35,9 @@
 
         $(function() {
             $("#signup_btn").click(function() {
-                var username = $("input#signup_name").val();
-                var emailId = $('input#signup_emailId').val();
-                var password = $("input#signup_passwd").val();
+                var username = $("input#signup_name").val().trim();
+                var emailId = $('input#signup_emailId').val().trim();
+                var password = ($("input#signup_passwd").val().trim());
                 var dataString = 'name=' +  username +  '&emailId=' + emailId + '&password=' + password;
                 $.ajax({
                     type: "POST",
