@@ -11,7 +11,8 @@ exports.friend_list_view = function (req, res){
 /* Return all of the friends for a user. */
 exports.getFriends = function (req, res){
     var userId = req.params.userId;
-    var query = "SELECT * FROM Group_Relationships WHERE UserId = '"+userId+"';";
+    var query = "SELECT * FROM Group_Relationships AS GR JOIN Account_Details AS AD ON GR.RelativeId = " +
+        "AD.UserId WHERE GR.UserId = '"+userId+"';";
     console.log("In function getFriends, query:"+query);
     var resMsg = "Get Friends query successful";
     var resMsgErr = "Get Friends query failed";

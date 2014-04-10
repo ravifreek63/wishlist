@@ -228,9 +228,9 @@
           rows = data.response.miscellaneous.rows;
 	  for (var i=0; i<rows.length; i++) {
             var name = rows[i].Name;
-	    var id = rows[i].Id;
+	        var id = rows[i].Id;
 	    $("#friend_list").append(friendListItem(name,id));
-	  }
+	    }
         });
 
 
