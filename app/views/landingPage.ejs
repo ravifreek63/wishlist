@@ -12,10 +12,8 @@
     $(function() {
         $("#login_btn").click(function() {
             var username = $("input#login_uname").val().trim();
-            alert(username);
             var password = ($("input#login_passwd").val().trim());
             console.log(password);
-            alert(password);
             var dataString = 'emailId=' + username + '&password=' + password;
             $.ajax({
                 type: "POST",
