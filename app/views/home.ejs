@@ -6,6 +6,7 @@
     <link href="/bootstrap-3.1.1-dist/css/bootstrap.css" rel="Stylesheet">
     <link href="/stylesheets/home-style.css" rel="stylesheet">
     <script src="/scripts/jquery.md5.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   </head>
   <body>
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -49,7 +50,7 @@
         $(function(){
             $("#logout_btn").click(function(){
                 $.post('/logout', {}, function(){});
-                $(location).attr('href',"/");
+		$(location).attr('href',"/");
             });
         });
         $(function(){

@@ -32,7 +32,8 @@ exports.homedemo = function(req, res){
 
 exports.logout = function(req, res){
     req.session.destroy(function(){
-        res.send("logged out");
+       console.log ("logging out"); 
+       res.send("logged out");
     });
 
 };

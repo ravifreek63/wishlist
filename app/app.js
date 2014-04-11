@@ -70,7 +70,7 @@ app.get('*', function(req, res, next){
         var userId = filteredUrl.substring(0, filteredUrl.indexOf('/'));
         console.log ("userId:" + userId);
         if (req.session.userId != userId){
-            req.redirect ('/');
+            res.redirect ('/');
         } else {
             next();
         }
