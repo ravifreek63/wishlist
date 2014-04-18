@@ -1,6 +1,8 @@
 /* This file contains handlers for the owner's friend list (both viewing and editing). */
 
 var methods = require('../helperMethods/methods.js');
+var connection = require('../data/dataConnection.js').connection;
+var gV = require('../globals/globalVariables.js');
 
 /* The (temporary) view */
 exports.friend_list_view = function (req, res){
@@ -22,11 +24,32 @@ exports.getFriends = function (req, res){
 /* add a friend */
 exports.addFriend = function (req, res) {
     var userId = req.params.userId;
-    var name = req.body.friendName;
+    var emailId = req.body.emailId;
+    console.log ("emailId=" + emailId);
     var resMsg = "added friend successfully";
     var resMsgErr = "Error adding friend";
-    var query = "INSERT INTO Group_Relationships (UserId, Name) Values ('"+userId+"','"+name+"');";
-    methods.runQuery(resMsg, resMsgErr, query, res);
+    var query1 = "SELECT * from Account_Details Where EmailId='"+ emailId+"';";
+    methods.logQuery(query1);
+    function sendResponse (err, obj) {
+        res.send(JSON.stringify({
+            error: err,
+            response: obj
+        }));
+    }
+    function accDetails(err, rows){
+        if (err == undefined) {
+            if (rows.length > 0) {
+                var relativeId = rows[0].UserId;
+                var fields = {UserId: userId, RelativeId: relativeId, GroupId: 1};
+                var query = methods.queryBuilder (gV.tableNames.Relationships, fields, gV.queryTypes.INSERT);
+                methods.runQuery(resMsg, resMsgErr, query, res);
+            }
+        } else {
+            methods.queryError(err, query1);
+            methods.createResponse (gV.failure.code, resMsgErr, gV.failure.status, {error: err},  sendResponse);
+        }
+    }
+    connection.query(query1, accDetails);
 };
 
 /* remove a friend */

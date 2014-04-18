@@ -4,6 +4,7 @@ var _ = require('underscore');
 var uuid = require('node-uuid');
 var connection = require('../data/dataConnection.js').connection;
 
+
 var createResponse = function createResponse (code, message, status, miscellaneous, callback){
     var responseObject = {
 	'code' : code, 
@@ -82,3 +83,44 @@ var generateWishList = function generateWishList (wishListId, userId, callback){
    });    
 };
 exports.generateWishList = generateWishList;
+
+var logQuery = function(query){
+    console.log ("Running Query:" + query)
+};
+exports.logQuery = logQuery;
+
+var queryError = function(error, query){
+    console.log("Error(" + error + ") in running query(" + query + ")");
+};
+exports.queryError = queryError;
+
+var queryBuilder = function(tableName, fields, type){
+    switch (type) {
+        case gV.queryTypes.INSERT:
+            var query = "INSERT INTO " + tableName + "(";
+            var index = 0;
+            var keys = [];
+            var values = [];
+            for(var attributename in fields){
+                keys[index] = attributename;
+                values[index] = "'" + fields[attributename] + "'";
+                index++;
+            }
+            query = query + arToList(keys) + ")";
+            query = query + " VALUES " + "(" + arToList(values)  +");";
+            break;
+    }
+    return query;
+};
+exports.queryBuilder = queryBuilder;
+
+// converts an array to a comma separated collection of strings
+var arToList = function(array){
+    var str = "";
+    array.forEach (function(element){
+        str = str + element + ",";
+    });
+    // returning the substring to remove the last comma
+    return str.substring(0, str.length-1);
+};
+

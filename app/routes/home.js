@@ -2,6 +2,7 @@ var connection = require('../data/dataConnection.js').connection;
 var methods = require('../helperMethods/methods.js');
 var gV = require('../globals/globalVariables.js');
 
+
 /*
  *  The home page after login.
  */

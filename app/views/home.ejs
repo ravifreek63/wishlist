@@ -34,17 +34,43 @@
 	      <a href="#">Myself</a>
 	    </li>
 	  </ul>
+
+	  <script>
+	  $(function() {
+                  $("#add_friend_btn").click(function() {
+                      var emailId = $('#add_friend_textbox').val().trim();
+                      var dataString = 'emailId=' + emailId;
+                      $.ajax({
+                        type: "POST",
+                        url: "/user/<%= userId %>/friends/add",
+                        data: dataString,
+                        success: function(data) {
+                            var response = $.parseJSON(data).response;
+                            if (response.code == 200) {
+                                location.reload();
+                            }
+                        }
+                      });
+                  });
+              });
+	  </script>
+
 	  <div class="input-group">
-	    <input type="text" class="form-control" placeholder="Add someone...">
-	    <span class="input-group-btn">
-	      <button class="btn btn-default" type="button">+</button>
-	    </span>
+
+	  <form accept-charset="UTF-8" role="form" id="signup_form">
+          <fieldset>
+              <div class="form-group">
+                  <input type="text" class="form-control" placeholder="Add someone..." id="add_friend_textbox">
+                  <input class="btn btn-default" type="submit" id="add_friend_btn" value="+"></button>
+              </div>
+          </fieldset>
+      </form>
+
+
+
+
 	  </div>
-<!--	  <div id="add_someone_div" style="position:absolute; bottom:0;">
-	    Add someone:
-            <input type="text" id="add_friend_textbox" style="width:150px">
-	    </input>
-	  </div>-->
+
 	</div>
     <script>
         $(function(){
@@ -60,7 +86,7 @@
         });
         $(function() {
             $("#addItem").click(function() {
-                alert("ahdjsa");
+
                 var itemName = $("input#ItemName_Modal").val();
                 var itemDescription = $('input#ItemDescription_Modal').val();
                 var preferredBrand = $("input#PreferredBrand_Modal").val();
