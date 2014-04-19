@@ -30,12 +30,13 @@
 	<!-- The sidebar -->
 	<div class="col-sm-3 col-md-2 sidebar">
 	  <ul id="friend_list" class="nav nav-sidebar">
-	    <li class="active">
-	      <a href="#">Myself</a>
+	    <li class="active" style ="margin-top:-20px;">
+	      <a>Friend List</a>
 	    </li>
 	  </ul>
-
 	  <script>
+	  friendName='';
+
 	  $(function() {
                   $("#add_friend_btn").click(function() {
                       var emailId = $('#add_friend_textbox').val().trim();
@@ -60,17 +61,14 @@
 	  <form accept-charset="UTF-8" role="form" id="signup_form">
           <fieldset>
               <div class="form-group">
-                  <input type="text" class="form-control" placeholder="Add someone..." id="add_friend_textbox">
+                  <input type="text" style="width:130px;float:left; font-size:13px"class="form-control" placeholder="Add a friend..." id="add_friend_textbox">
                   <input class="btn btn-default" type="submit" id="add_friend_btn" value="+"></button>
               </div>
+
+
           </fieldset>
       </form>
-
-
-
-
 	  </div>
-
 	</div>
     <script>
         $(function(){
@@ -86,7 +84,6 @@
         });
         $(function() {
             $("#addItem").click(function() {
-
                 var itemName = $("input#ItemName_Modal").val();
                 var itemDescription = $('input#ItemDescription_Modal').val();
                 var preferredBrand = $("input#PreferredBrand_Modal").val();
@@ -113,13 +110,21 @@
 	<!-- The main content area -->
 	<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 	  <div class="page-header">
-            <h2 style="display:inline-block;"> <%=name%>'s wishlist </h2>
+            <h3 style="display:inline-block;margin: -20px 0 20px;"> Welcome <%=name%> </h3>
 	  </div>
+        <div id= "alertW" class="alert alert-warning" style="visibility:hidden;">
+              <div id="text5"></div>
+        </div>
+
         <div>
-          <table class="table table-striped table-bordered table-condensed" id="wishlistTable" style="text-align: center">
+          <table class="table table-striped table-bordered table-condensed" id="wishlistTable" style="text-align: center;">
           </table>
          </div>
     </div>
+
+
+
+
           <script>
 
               function fillTable(wishes, viewFriend) {
@@ -202,8 +207,8 @@
 
           </script>
 
-          <button class="btn btn-primary btn-large" style="margin-left:260px; margin-top: -20px; width:200px" data-target="#addItemModal" data-toggle="modal">
-              <i class="icon-white icon-plus"></i> Add an item </button>
+          <button id="add_item_btn" class="btn btn-primary btn-large" style="margin-left:260px; margin-top: -20px; width:200px" data-target="#addItemModal" data-toggle="modal">
+          <i class="icon-white icon-plus"></i> Add an item </button>
 
 
           <!-- Modal -->
@@ -212,7 +217,7 @@
                   <div class="modal-content">
                       <div class="modal-header">
                           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                          <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                          <h4 class="modal-title" id="myModalLabel">Add an item </h4>
                       </div>
                       <div class="modal-body">
                           <form accept-charset="UTF-8" role="form" id="addItemForm">
@@ -251,7 +256,7 @@
       // Define a list item
       function friendListItemOld(name,id) {
         var s = name;
-        s = '<a href="#">' + s + '</a>'
+        s = '<li class ="sidebar-brand" ><a href="#">' + s + '</a></li>'
         s = s + '<br>';
         s = s + '<button> invite </button>';
         s = s + '<button> edit </button>';
@@ -264,23 +269,48 @@
       };
 
       function friendListItem(name,id) {
-          var s = name;
-          s = '<a href="#">' + s + '</a>'
+          var encodeName = encodeURIComponent(name);
+          var action = "getFriendsItems('"+ encodeName+"','"+id+"')";
+          var s = '<li class ="sidebar-brand" style="cursor: pointer; cursor:hand;" ><a onclick='+action+'>' + name + '</a></li>'
           s = s + '<br>';
-          var action = "getFriendsItems('"+id+"')";
-          s = s + '<button onclick='+action+'>view </button>';
           s = '<div>' + s + '</div>';
           var itemId = "friendListItem_"+id;
           s = '<li id=\''+itemId+'\'>' + s + '</li>';
           return s;
       };
 
-      var getFriendsItems = function( i ) {
+      var getFriendsItems = function(name, i) {
+      name = decodeURIComponent(name);
+      // Hiding the add item button
+      var addItemBtn = document.getElementById("add_item_btn");
+      addItemBtn.style.visibility = 'hidden';
+      // Displaying Elements
+      var elem1 = document.getElementById("suggestion_box");
+       elem1.style.visibility = 'visible';
+      var elem2 = document.getElementById("suggestion_header");
+        elem2.style.visibility = 'visible';
+      // Need to set the name of the friend also
+      document.getElementById("text5").innerHTML = '<strong> ' + name + ' hasn\'t setup his wishlist. </strong>' +
+       'You can add ideas or tell us something about him, for suggestions!';
+      document.getElementById("alertW").style.visibility = 'visible';
+      document.getElementById("alertW").style['margin-left'] = '100px';
+      document.getElementById("alertW").style['width'] = '800px';
+
+      document.getElementById("text1").innerHTML = '<h4> Your ideas for '+  name +'</h4>';
+      document.getElementById("text2").innerHTML = '<p>Write down an idea you have before you forget! ' +
+       '(We won\'t tell anyone unless you want us to ask ' + name + '.)</p>';
+      document.getElementById("text3").innerHTML = '<h4> Our suggestions for '+  name +'</h4>';
+      document.getElementById("text4").innerHTML = '<p> To improve our suggestions tell us more about '+  name +'</p>';
+
       $.get("/user/<%=userId%>/items/"+ i +"/getFriend",{},
                   function(response) {
                       var jsonR = $.parseJSON(response).response;
-                      if (jsonR.code == 200)
-                        fillTable (jsonR.miscellaneous.rows, 1);
+                      if (jsonR.code == 200){
+                            fillTable (jsonR.miscellaneous.rows, 1);
+                            if (jsonR.miscellaneous.rows.length == 0){
+                                //document.getElementById("").
+                            }
+                        }
                   });
       };
 
@@ -311,12 +341,12 @@
       $(document).ready(function() {
         $("#add_friend_textbox").on("keypress", function(e) {
 	  if (e.keyCode == 13) /* enter key pressed */ {
-	    var friendName = $("#add_friend_textbox").val();
+	    var friend_name = $("#add_friend_textbox").val();
 	    $("#add_friend_textbox").val("");
-            $.post("/user/<%= userId %>/friends/add",{'friendName':friendName},
+            $.post("/user/<%= userId %>/friends/add",{'friendName':friend_name},
 		function(response) {
 		  var newContactId = response.response.miscellaneous.rows.insertId;
-		  $("#friend_list").append(friendListItem(friendName,newContactId));
+		  $("#friend_list").append(friendListItem(friend_name,newContactId));
 		}
 	    ,"json");
 	    return false; // prevent the keypress from triggering further
@@ -324,7 +354,33 @@
 	});
       });
     </script>
+    <div style="margin-top:-250px;">
+	  <div id="suggestion_box" style="visibility:hidden;margin-left:230px;">
+	  <div id = "text1"> </div>
+	  <div id = "text2"> </div>
+	    <div class="input-group col-sm-5"  style="margin-top:20px;">
+	      <input type="text" class="form-control" placeholder="Add an idea...">
+	      <span class="input-group-btn">
+		<button class="btn btn-default" type="button">+</button>
+	      </span>
+	    </div>
+	  </div>
+      </div>
+      <div id="suggestion_header" style="visibility:hidden; margin-left:220px;margin-top:20px;">
+	    <div id = "text3"></div>
+	    <div id ="text4"></div>
+	  </div>
+     </div>
+]
+	</div>
+      </div>
+    </div>
 
+
+    <!-- Scripts placed at end to help pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
+    <!-- This seems irrelevant. <script src="/bootstrap-3.1.1-dist/js/docs.min.js"></script> -->
 
   </body>
 </html>
