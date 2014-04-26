@@ -25,5 +25,13 @@
         android:text="View My Wishes"
         android:onClick="onViewMyWishesButtonClicked"
         />
+    
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View Wishlist"
+        android:onClick="onViewWishlistButtonClicked"
+        />
 
 </LinearLayout>
