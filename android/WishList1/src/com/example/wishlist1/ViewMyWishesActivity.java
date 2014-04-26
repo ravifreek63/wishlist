@@ -1,5 +1,6 @@
 package com.example.wishlist1;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -113,20 +114,20 @@ public class ViewMyWishesActivity extends Activity {
 				return;
 			}
 			
+			JSONArray items;
 			try {
 				JSONObject obj = new JSONObject(response);
 				Log.d("tatewty",obj.toString());
 				// TODO: The strings in the following line should be in an xml file.
 				String resultStatus = (String) obj.get("status");
 				success = resultStatus.equalsIgnoreCase("Success.");
+				items = obj.getJSONArray("wishes");
+				if (success) {
+					mWishlistTextView.setText(items.getString(0));
+				}
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-
-			if (success) {
-				// TODO: Populate the list.
-				mWishlistTextView.setText("stuff");
-			} 
 		}
 	}
 }

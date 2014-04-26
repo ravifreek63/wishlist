@@ -39,4 +39,9 @@ public class MainActivity extends Activity {
 		startActivity(intent);
     }
     
+    public void onViewWishlistButtonClicked(View view) {
+    	Intent intent = new Intent(this, WishlistActivity.class);
+		startActivity(intent);
+    }
+    
 }

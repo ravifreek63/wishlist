@@ -6,5 +6,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_new_wish">NewWishActivity</string>
     <string name="title_activity_view_my_wishes">ViewMyWishes</string>
+    <string name="title_activity_wishlist">WishlistActivity</string>
 
 </resources>
