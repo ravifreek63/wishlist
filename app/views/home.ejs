@@ -37,9 +37,16 @@
 	  <script>
 	  friendName='';
 
+    function checkIfEmailInString(text) {
+        var re = /(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
+        return re.test(text);
+    }
+
 	  $(function() {
                   $("#add_friend_btn").click(function() {
                       var emailId = $('#add_friend_textbox').val().trim();
+                      if (checkIfEmailInString(emailId == true){
+                        }
                       var dataString = 'emailId=' + emailId;
                       $.ajax({
                         type: "POST",
@@ -330,7 +337,7 @@
           rows = data.response.miscellaneous.rows;
             console.log(rows);
 	  for (var i=0; i<rows.length; i++) {
-            var name = rows[i].Name;
+            var name = rows[i].RelationshipAlias;
 	        var id = rows[i].UserId;
 	        $("#friend_list").append(friendListItem(name,id));
 	    }

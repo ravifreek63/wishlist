@@ -3,6 +3,8 @@
 var methods = require('../helperMethods/methods.js');
 var connection = require('../data/dataConnection.js').connection;
 var gV = require('../globals/globalVariables.js');
+var check = require('validator').check,
+    sanitize = require('validator').sanitize
 
 /* The (temporary) view */
 exports.friend_list_view = function (req, res){
@@ -13,7 +15,7 @@ exports.friend_list_view = function (req, res){
 /* Return all of the friends for a user. */
 exports.getFriends = function (req, res){
     var userId = req.params.userId;
-    var query = "SELECT AD.Name, AD.UserId FROM Group_Relationships AS GR JOIN Account_Details AS AD ON GR.RelativeId = " +
+    var query = "SELECT AD.Name, AD.UserId, GR.RelationshipAlias FROM Group_Relationships AS GR JOIN Account_Details AS AD ON GR.RelativeId = " +
         "AD.UserId WHERE GR.UserId = '"+userId+"';";
     console.log("In function getFriends, query:"+query);
     var resMsg = "Get Friends query successful";
@@ -24,8 +26,10 @@ exports.getFriends = function (req, res){
 /* add a friend */
 exports.addFriend = function (req, res) {
     var userId = req.params.userId;
+    var alias = req.body.alias;
+    var relationShipAlias = alias;
     var emailId = req.body.emailId;
-    console.log ("emailId=" + emailId);
+    // Check whether the email Id exists
     var resMsg = "added friend successfully";
     var resMsgErr = "Error adding friend";
     var query1 = "SELECT * from Account_Details Where EmailId='"+ emailId+"';";
@@ -38,11 +42,41 @@ exports.addFriend = function (req, res) {
     }
     function accDetails(err, rows){
         if (err == undefined) {
-            if (rows.length > 0) {
+            if (rows.length > 0) { // If the user account already exists
                 var relativeId = rows[0].UserId;
-                var fields = {UserId: userId, RelativeId: relativeId, GroupId: 1};
+                if (relationShipAlias == undefined) {
+                    relationShipAlias = rows[0].Name;
+                    if (relationShipAlias == undefined || relationShipAlias == null || relationShipAlias == "") {
+                       relationShipAlias = rows[0].EmailId;
+                    }
+                }
+                var fields = {UserId: userId, RelativeId: relativeId, GroupId: 1, RelationshipAlias: relationShipAlias};
                 var query = methods.queryBuilder (gV.tableNames.Relationships, fields, gV.queryTypes.INSERT);
                 methods.runQuery(resMsg, resMsgErr, query, res);
+            } else if (rows.length == 0){ // If the account does not exist
+                // Create a non activated account
+                var relativeId = methods.generateUUID (); // Check for duplicate UUID
+                var password = "";
+                var type = 2;
+                var name  ="";
+                var activated = 0;
+                var fields = {UserId: relativeId, Password: password, Type: type, Name:name, EmailId: emailId, Activated: activated};
+                var createAccountQuery = methods.queryBuilder (gV.tableNames.Account_Details, fields, gV.queryTypes.INSERT);
+                methods.logQuery("createAccountQuery:" + createAccountQuery);
+                function accountCreationHandler (err) {
+                    if (err ==  undefined) {
+                        if (relationShipAlias == undefined)
+                           relationShipAlias = emailId;
+                        var fields = {UserId: userId, RelativeId: relativeId, GroupId: 1, RelationshipAlias: relationShipAlias};
+                        var relationshipQuery = methods.queryBuilder (gV.tableNames.Relationships, fields, gV.queryTypes.INSERT);
+                        methods.logQuery("relationshipQuery:" + relationshipQuery);
+                        methods.runQuery(resMsg, resMsgErr, relationshipQuery, res);
+                    } else {
+                        methods.queryError(err, createAccountQuery);
+                        res.send (err);
+                    }
+                }
+                connection.query(createAccountQuery, accountCreationHandler);
             }
         } else {
             methods.queryError(err, query1);

@@ -21,6 +21,7 @@ var queryTypes = {
 exports.queryTypes = queryTypes;
 
 var tableNames = {
-    Relationships: "Group_Relationships"
+    Relationships: "Group_Relationships",
+    Account_Details: "Account_Details"
 };
 exports.tableNames = tableNames;
