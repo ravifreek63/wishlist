@@ -23,6 +23,7 @@ app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.favicon());
+app.use(express.bodyParser( { keepExtensions: true, uploadDir: __dirname + '/../tmpUploads' } ));
 app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
@@ -49,7 +50,9 @@ app.get('/remove_user', john_test.remove_user_handler);
 /* Login/signup routes. */
 app.post('/signUp', accounts.createAccount); // Signup for the user
 app.post('/signIn', accounts.signIn); // login for the user
-
+app.post('/user/:userId/upload',ownWishList.uploadFile); // uploads the file in the local filesystem
+app.get('/user/:userId/:imageId/getImage', ownWishList.getFile);
+app.post('/user/:userId/invite', accounts.sendInvite);
 /* Home */
 
 app.get('/homedemo/:userId', home.homedemo);
@@ -61,7 +64,9 @@ app.post('/mobile/addWish/', mobile.addWish);
 
 /* Interception layer where we check for user session. This implies that all the subsequent requests are secure. */
 app.get('*', function(req, res, next){
-    if (req.url.indexOf('.jpeg') >= 0 || req.url.indexOf('.css') >= 0 || req.url.indexOf('.js') >= 0){
+    if (req.url.indexOf('.jpeg') >= 0 || req.url.indexOf('uploads') >= 0
+        || req.url.indexOf('.css') >= 0 || req.url.indexOf('.js') >= 0
+        || req.url.indexOf('getImage')>=0){
         next();
     } else if (typeof req.session == 'undefined' || typeof req.session.userId=='undefined'){
         res.redirect("");
