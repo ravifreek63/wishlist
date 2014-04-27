@@ -17,11 +17,13 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 
 public class WishlistActivity extends ListActivity {
+	public final static String param_userId = "param_userId";
 	
-	static String mEmail = "john@gmail.com";
+	private String mUserId;
 	
 	private View mWishlistGetStatusView;
 
@@ -31,11 +33,14 @@ public class WishlistActivity extends ListActivity {
 		setContentView(R.layout.activity_wishlist);
 		// Show the Up button in the action bar.
 		setupActionBar();
+		
+		Intent intent = getIntent();
+        mUserId = intent.getStringExtra(param_userId);
 
 		mWishlistGetStatusView = findViewById(R.id.wishlist_get_status);
 		showProgress(true);
 		
-	    WishlistRequestPost post = new WishlistRequestPost(mEmail);
+	    WishlistRequestPost post = new WishlistRequestPost(mUserId);
 	    WishlistRequestPostTask task = new WishlistRequestPostTask();
 	    task.execute(post);
 	}
@@ -105,19 +110,22 @@ public class WishlistActivity extends ListActivity {
 	}
 	
 	private class WishlistRequestPost extends HttpPost.SendableObject {
-		private String email;
-		public WishlistRequestPost(String _email){
-			url = "http://ec2-54-186-87-220.us-west-2.compute.amazonaws.com:3000/mobile/getWishList/";
-			email = _email;
+		private String userId;
+		public WishlistRequestPost(String _userId){
+			userId = _userId;
+			url = "http://ec2-54-186-87-220.us-west-2.compute.amazonaws.com:3000/user/" + userId +"/items/get";
+			httpType = HttpType.GET;
 		}
 		public String toJSON() {
+			/*
 			JSONObject obj = new JSONObject();
 			try {
-				obj.put("email", email);
+				obj.put("userId", userId);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-			return obj.toString();
+			return obj.toString(); */
+			return "{}";
 		}
 	}
 	
@@ -131,26 +139,26 @@ public class WishlistActivity extends ListActivity {
 		}
 
 		@Override
-		protected void onPostExecute(final String response) {
-			Boolean success = false;
+		protected void onPostExecute(final String strResponse) {
 			showProgress(false);
 			
 			// Check if there was an error in transmission.
-			if (response == HttpPost.ERROR) {
+			if (strResponse == HttpPost.ERROR) {
 				// TODO: Notify user that there was a connection error.
+				Log.d("tatewty", "Connection failure.");
 				return;
 			}
 			
-			JSONArray items;
 			try {
-				JSONObject obj = new JSONObject(response);
-				Log.d("tatewty",obj.toString());
-				// TODO: The strings in the following line should be in an xml file.
-				String resultStatus = (String) obj.get("status");
-				success = resultStatus.equalsIgnoreCase("Success.");
-				items = obj.getJSONArray("wishes");
-				if (success) {
-					WishlistAdapter adapter = new WishlistAdapter(WishlistActivity.this,items);
+				JSONObject obj = new JSONObject(strResponse);
+				
+				JSONObject jsonResponse = obj.getJSONObject("response");
+				String strMessage = jsonResponse.getString("message");
+				if (strMessage.equalsIgnoreCase("Get Items query successful")) {
+					JSONObject jsonMiscellaneous = jsonResponse.getJSONObject("miscellaneous");
+					JSONArray jsonRows = jsonMiscellaneous.getJSONArray("rows");
+					
+					WishlistAdapter adapter = new WishlistAdapter(WishlistActivity.this,jsonRows);
 					setListAdapter(adapter);
 				}
 			} catch (JSONException e) {

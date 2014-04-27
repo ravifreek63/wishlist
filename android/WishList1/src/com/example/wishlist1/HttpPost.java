@@ -18,10 +18,15 @@ public class HttpPost {
 	//private static String URL_ADD_WISH = "http://ec2-54-186-87-220.us-west-2.compute.amazonaws.com:3000/mobile/addWish/";
 	
 	public static abstract class SendableObject {
+		public enum HttpType {GET,POST};
 		public abstract String toJSON();
 		public String url; //The url to which the object should be sent.
-		protected String kvPair(String key, String value) {
+		/*protected String kvPair(String key, String value) {
 			return "\""+key+"\":\""+value+"\"";
+		}*/
+		protected HttpType httpType = HttpType.POST;
+		public Boolean shouldPost() {
+			return httpType == HttpType.POST;
 		}
 	}
 	
@@ -43,34 +48,44 @@ public class HttpPost {
 		// Only display the first 500 characters of the retrieved
 		// web page content.
 		// TODO: This length is probably too small. Is there a better way to do this?
-		int len = 500;
+		int len = 15000;
 
 		try {
 			// The URL for the post.
 			URL url = new URL(stuffToPost.url);
 			// Define the connection and set initial parameters.
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestMethod("POST");
+
 			conn.setReadTimeout(10000 /* milliseconds */);
 			conn.setConnectTimeout(15000 /* milliseconds */);
 			conn.setDoInput(true);
-			conn.setDoOutput(true);
-			// Build the body.
-			conn.setRequestProperty("Content-Type","application/json");
-			conn.setRequestProperty("Accept", "application/json");
-			// Start the query.
-			conn.connect();
-			OutputStream outputStream = conn.getOutputStream();
-			outputStream.write(stuffToPost.toJSON().getBytes("UTF-8"));
-			outputStream.close();
+			if (stuffToPost.shouldPost()) {
+				conn.setRequestMethod("POST");
+				conn.setDoOutput(true);
+				// Build the body.
+				conn.setRequestProperty("Content-Type","application/json");
+				conn.setRequestProperty("Accept", "application/json");
+				// Start the query.
+				conn.connect();
+			} else {
+				conn.setRequestMethod("GET");
+				conn.setDoOutput(false);
+			}
+
+			if (stuffToPost.shouldPost()) {
+				OutputStream outputStream = conn.getOutputStream();
+				outputStream.write(stuffToPost.toJSON().getBytes("UTF-8"));
+				outputStream.close();
+			}
 			int response = conn.getResponseCode();
 			Log.d("Tatewty:response", "The response is: " + response);
+			
 			is = conn.getInputStream();
 
 			// Convert the InputStream into a string
 			String contentAsString = readIt(is, len);
-			return contentAsString;
-
+			return contentAsString;			
+			
 			// Makes sure that the InputStream is closed after the app is
 			// finished using it.
 		} finally {

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename local variable &apos;responseString&apos; in &apos;com.example.wishlist1.LoginActivity.LoginTask.onPostExecute(...)&apos; to &apos;strResponse&apos;&#x0A;- Original project: &apos;WishList1&apos;&#x0A;- Original element: &apos;com.example.wishlist1.LoginActivity.LoginTask.onPostExecute(String).responseString&apos;&#x0A;- Renamed element: &apos;responseString&apos;&#x0A;- Update references to refactored element" description="Rename local variable &apos;responseString&apos;" id="org.eclipse.jdt.ui.rename.local.variable" input="/src&lt;com.example.wishlist1{LoginActivity.java[LoginActivity[LoginTask~onPostExecute~QString;@responseString!6943!6969!6956!6969!QString;!16!true" name="strResponse" references="true" stamp="1398621634609" version="1.0"/>
+</session>

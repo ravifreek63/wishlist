@@ -122,7 +122,7 @@ public class LoginActivity extends Activity {
 			mPasswordView.setError(getString(R.string.error_field_required));
 			focusView = mPasswordView;
 			cancel = true;
-		} else if (mPassword.length() < 4) {
+		} else if (mPassword.length() < 1) {
 			mPasswordView.setError(getString(R.string.error_invalid_password));
 			focusView = mPasswordView;
 			cancel = true;
@@ -200,14 +200,14 @@ public class LoginActivity extends Activity {
 		private String email;
 		private String password;
 		public LoginPost(String _email, String _password){
-			url = "http://ec2-54-186-87-220.us-west-2.compute.amazonaws.com:3000/mobile/logIn/";
+			url = "http://ec2-54-186-87-220.us-west-2.compute.amazonaws.com:3000/signIn";
 			email = _email;
 			password = _password;
 		}
 		public String toJSON() {
 			JSONObject obj = new JSONObject();
 			try {
-				obj.put("email", email);
+				obj.put("emailId", email);
 				obj.put("password", password);
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -230,37 +230,36 @@ public class LoginActivity extends Activity {
 		}
 
 		@Override
-		protected void onPostExecute(final String response) {
+		protected void onPostExecute(final String strResponse) {
 			mAuthTask = null;
 			showProgress(false);
 			
-			Boolean success = false;
-			
 			// Check if there was an error in transmission.
-			if (response == HttpPost.ERROR) {
+			if (strResponse == HttpPost.ERROR) {
 				// TODO: Notify user that there was a connection error.
+				Log.d("tatewty", "Connection failure.");
 				return;
 			}
 			
 			try {
-				JSONObject obj = new JSONObject(response);
-				Log.d("tatewty",obj.toString());
-				// TODO: The strings in the following line should be in an xml file.
-				String resultStatus = (String) obj.get("status");
-				success = resultStatus.equalsIgnoreCase("Success.");
+				JSONObject obj = new JSONObject(strResponse);
+				
+				JSONObject jsonResponse = obj.getJSONObject("response");
+				String strMessage = jsonResponse.getString("message");
+				if (strMessage.equalsIgnoreCase("Login Successful")) {
+					JSONObject jsonMiscellaneous = jsonResponse.getJSONObject("miscellaneous");
+					String userId = jsonMiscellaneous.getString("userId");
+					Intent intent = new Intent(LoginActivity.this, WishlistActivity.class);
+			    	intent.putExtra(WishlistActivity.param_userId, userId);
+					startActivity(intent);
+					finish();
+				}else {
+					mPasswordView
+						.setError(getString(R.string.error_incorrect_password));
+					mPasswordView.requestFocus();
+				}
 			} catch (JSONException e) {
 				e.printStackTrace();
-			}
-					
-			if (success) {
-				Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-		    	intent.putExtra(MainActivity.param_email, mEmail);
-				startActivity(intent);
-				finish();
-			} else {
-				mPasswordView
-						.setError(getString(R.string.error_incorrect_password));
-				mPasswordView.requestFocus();
 			}
 		}
 
