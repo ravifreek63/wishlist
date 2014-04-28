@@ -12,6 +12,7 @@
     "string": "*", 
     "underscore" : "*",
     "node-uuid" : "*",
-     "nodemailer":"*"
+    "nodemailer":"*",
+    "validator": "*"
   }
 }
