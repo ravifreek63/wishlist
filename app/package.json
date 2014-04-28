@@ -11,6 +11,7 @@
     "stylus": "*", 
     "string": "*", 
     "underscore" : "*",
-    "node-uuid" : "*"
+    "node-uuid" : "*",
+     "nodemailer":"*"
   }
 }

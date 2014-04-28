@@ -2,6 +2,7 @@ var methods = require('../helperMethods/methods.js');
 var gV = require('../globals/globalVariables.js');
 var string = require('string');
 var connection = require('../data/dataConnection.js').connection;
+var nodemailer = require("nodemailer");
 /*
  header: Content-type: application/json
 
@@ -108,3 +109,74 @@ var sendResponse = function (err, obj){
      }));
 };
 };
+
+
+exports.sendInvite = function (req, res) {
+    var userId = req.params.userId;
+    var relativeId = req.body.relativeId;
+    var userEmailQ = "Select * from Account_Details where UserId='" + userId + "' LIMIT 1;";
+    methods.logQuery(userEmailQ);
+    var sendResponse = function (err, obj) {
+        res.send(JSON.stringify({
+            error: err,
+            response: obj
+        }));
+    };
+        function userEmailQH(err, rows) {
+            console.log("ithe");
+            if (err == undefined) {
+                console.log ("here");
+                var emailIdSender = rows[0].EmailId;
+                var senderName = rows[0].Name;
+                var userEmailQ2 = "Select * from Account_Details where UserId='" + relativeId + "';";
+                console.log ("senderName:"+ senderName);
+                methods.logQuery(userEmailQ2);
+                function userEmailQ2H(err2, rows2) {
+                    if (err2 == undefined) {
+                        var emailReceiver = rows2[0].EmailId;
+                        var receiverName = rows2[0].Name;
+                        sendMail(emailIdSender, emailReceiver, senderName, receiverName);
+                        methods.createResponse(gV.success.code, "Message Sent", gV.success.status, {}, sendResponse);
+                    } else {
+                        res.send(err2);
+                    }
+                }
+                connection.query(userEmailQ2, userEmailQ2H);
+            } else {
+                console.log ("!!here!!");
+                methods.queryError(err, userEmailQ);
+                res.send(err);
+            }
+        }
+        connection.query(userEmailQ, userEmailQH);
+};
+
+function sendMail(emailIdSender, emailReceiver, senderName, receiverName) {
+// create reusable transport method (opens pool of SMTP connections)
+    var smtpTransport = nodemailer.createTransport("SMTP", {
+        service: "Gmail",
+        auth: {
+            user: "wishlistprinceton@gmail.com",
+            pass: "ravioscarjohn"
+        }
+    });
+
+// setup e-mail data with unicode symbols
+    var mailOptions = {
+        from: senderName + "<" + emailIdSender + ">", // sender address
+        to: receiverName + "<" + emailReceiver + ">", // list of receivers
+        subject: "Invitation To Join WishFor", // Subject line
+        html: "<b>Join WishFor !! </b>" // html body
+    };
+console.log (JSON.stringify(mailOptions));
+// send mail with defined transport object
+    smtpTransport.sendMail(mailOptions, function (error, response) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log("Message sent: " + response.message);
+        }
+        // if you don't want to use this transport object anymore, uncomment following line
+        smtpTransport.close(); // shut down the connection pool, no more messages
+    });
+}

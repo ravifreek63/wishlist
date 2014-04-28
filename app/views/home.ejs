@@ -69,7 +69,8 @@
             }
           });
         });
-      });
+
+    }
 	  </script>
 
 	</div>
@@ -124,10 +125,6 @@
           </table>
          </div>
     </div>
-
-
-
-
           <script>
 
               function fillTable(wishes, viewFriend) {
@@ -379,10 +376,22 @@
       </div>
     </div>
 
+	  <form id="uploadForm" enctype="multipart/form-data" action="/user/<%= userId %>/upload" method="post" style="visibility:hidden;">
+          <fieldset>
+              <div class="form-group">
+                  <input type="file" name="userPhoto" id ="userPhotoInput" style="margin-left:250px;">
+              </div>
+          </fieldset>
+      </form>
+
+    <span id="status" />
+    <img id="uploadedImage" style="margin-left:250px;"/>
 
     <!-- Scripts placed at end to help pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
+    <script src="/scripts/upload.js"></script>
+    <script src="http://malsup.github.com/jquery.form.js"></script>
     <!-- This seems irrelevant. <script src="/bootstrap-3.1.1-dist/js/docs.min.js"></script> -->
 
   </body>
