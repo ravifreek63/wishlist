@@ -16,7 +16,7 @@ exports.addItems = function (req, res){
     var preferredBrand = req.body.preferredBrand;
     var approximatePrice = req.body.approximatePrice;
     var description = req.body.description;
-
+    var imageId = req.body.imageId;
     var userId = req.params.userId;
     var resMsg = "added items successfully";
     var resMsgErr = "Error in adding items";
@@ -41,9 +41,9 @@ exports.addItems = function (req, res){
                             if (err == undefined){
                                 var wishListId = obj.wishListId;
                                 var query = "Insert Into Wish_WishList (WishListId, WishId, ItemId, UserId, Description, " +
-                                    "PreferredBrand, ApproxPrice) Values ('" +
+                                    "PreferredBrand, ApproxPrice, ImageId) Values ('" +
                                     wishListId + "','" + wishId + "','" + itemId +  "','" +  userId + "','" + description +
-                                    "','" + preferredBrand + "','" + approximatePrice + "');";
+                                    "','" + preferredBrand + "','" + approximatePrice + "','" + imageId + "');";
                                 console.log (query);
                                 methods.runQuery(resMsg, resMsgErr, query, res);
                             } else {
