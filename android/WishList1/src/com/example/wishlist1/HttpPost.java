@@ -1,5 +1,6 @@
 package com.example.wishlist1;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -28,6 +29,25 @@ public class HttpPost {
 		public Boolean shouldPost() {
 			return httpType == HttpType.POST;
 		}
+		public void setConnectionProperties(HttpURLConnection conn) {
+			conn.setRequestProperty("Content-Type","application/json");
+			conn.setRequestProperty("Accept", "application/json");
+		}
+		public void writeHeader(OutputStream os) {
+			
+		}
+		public void writeFooter(OutputStream os) {
+			
+		}
+		public byte[] getBytes() {
+			try {
+				return this.toJSON().getBytes("UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+		}
 	}
 	
 	public static String post(SendableObject stuffToPost, ConnectivityManager connMgr) {
@@ -36,6 +56,7 @@ public class HttpPost {
 			try {
 				return doThePost(stuffToPost);
 			} catch (IOException e) {
+				e.printStackTrace();
 				return ERROR;
 			}
 		} else {
@@ -63,8 +84,9 @@ public class HttpPost {
 				conn.setRequestMethod("POST");
 				conn.setDoOutput(true);
 				// Build the body.
-				conn.setRequestProperty("Content-Type","application/json");
-				conn.setRequestProperty("Accept", "application/json");
+				/* conn.setRequestProperty("Content-Type","application/json");
+				conn.setRequestProperty("Accept", "application/json"); */
+				stuffToPost.setConnectionProperties(conn);
 				// Start the query.
 				conn.connect();
 			} else {
@@ -74,7 +96,11 @@ public class HttpPost {
 
 			if (stuffToPost.shouldPost()) {
 				OutputStream outputStream = conn.getOutputStream();
-				outputStream.write(stuffToPost.toJSON().getBytes("UTF-8"));
+				stuffToPost.writeHeader(outputStream);
+				//outputStream.write(stuffToPost.getBytes());
+				DataOutputStream dos = new DataOutputStream(outputStream);
+				dos.write(stuffToPost.getBytes());
+				stuffToPost.writeFooter(outputStream);
 				outputStream.close();
 			}
 			int response = conn.getResponseCode();

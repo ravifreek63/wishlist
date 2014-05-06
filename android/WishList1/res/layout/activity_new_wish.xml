@@ -8,6 +8,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".NewWishActivity" >
 
+    <!-- Name -->
+    
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
@@ -30,6 +32,8 @@
         <requestFocus />
     </EditText>
 
+    <!-- Description -->
+    
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
@@ -48,6 +52,39 @@
         android:layout_below="@+id/textView2"
         android:ems="10"
         android:inputType="textMultiLine" />
+    
+    <!-- Image -->
+    
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/editTextWishDescription"
+        android:layout_below="@+id/editTextWishDescription"
+        android:text="Image:"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <Button
+        android:id="@+id/imageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView3"
+        android:layout_centerHorizontal="true"
+        android:onClick="onImageButtonClicked"
+        android:text="Add Image"
+        />
+    
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/textView3"
+        android:src="@drawable/ic_launcher"
+        android:visibility="gone"
+        />
+    
+    <!-- Send and Cancel buttons -->
 
     <Button
         android:id="@+id/addButton"
@@ -70,5 +107,7 @@
         android:layout_marginTop="128dp"
         android:onClick="onCancelButtonClicked"
         android:text="Cancel" />
+
+
 
 </RelativeLayout>

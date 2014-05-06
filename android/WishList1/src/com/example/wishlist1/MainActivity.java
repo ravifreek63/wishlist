@@ -29,13 +29,7 @@ public class MainActivity extends Activity {
     
     public void onAddWishButtonClicked(View view) {
     	Intent intent = new Intent(this, NewWishActivity.class);
-    	intent.putExtra(NewWishActivity.param_email, mEmail);
-		startActivity(intent);
-    }
-    
-    public void onViewMyWishesButtonClicked(View view) {
-    	Intent intent = new Intent(this, ViewMyWishesActivity.class);
-    	intent.putExtra(ViewMyWishesActivity.param_email, mEmail);
+ //   	intent.putExtra(NewWishActivity.param_email, mEmail);
 		startActivity(intent);
     }
     

@@ -1,5 +1,12 @@
 package com.example.wishlist1;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -11,22 +18,39 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.support.v4.app.NavUtils;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Build;
+import android.provider.MediaStore;
 
 public class NewWishActivity extends Activity {
-	public final static String param_email = "param_email";
-
+	public final static String param_userId = "param_userId";
+	
+	static final int REQUEST_IMAGE_CAPTURE = 1;
+	
+	private String mUserId;
+	
+	private ImageView mImageView;
+	private Button mImageButton;
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_new_wish);
 		// Show the Up button in the action bar.
 		setupActionBar();
+		
+		Intent intent = getIntent();
+		mUserId = intent.getStringExtra(param_userId);
+		mImageView = (ImageView) findViewById(R.id.imageView);
+		mImageButton = (Button) findViewById(R.id.imageButton);
 	}
 
 	/**
@@ -64,35 +88,91 @@ public class NewWishActivity extends Activity {
 	}
 
 	public void onCancelButtonClicked(View view) {
+		Intent resultData = new Intent();
+		resultData.putExtra(WishlistActivity.result_shouldRefresh, false);
+		setResult(Activity.RESULT_OK, resultData);
 		finish();
 	}
 	
 	public void onAddButtonClicked(View view) {
-		EditText editTextWishIdea = (EditText) findViewById(R.id.editTextWishIdea);
+		/*EditText editTextWishIdea = (EditText) findViewById(R.id.editTextWishIdea);
 		String wishName = editTextWishIdea.getText().toString();
 		EditText editTextWishDescription = (EditText) findViewById(R.id.editTextWishDescription);
 		String wishDescription = editTextWishDescription.getText().toString();
-		Intent intent = getIntent();
-		String userEmail = intent.getStringExtra(param_email);
-		new PostNewWishTask().execute(new NewWishPost(userEmail,wishName,wishDescription));
+		new PostNewWishTask().execute(new NewWishPost(mUserId,wishName,wishDescription));*/
+		new PostNewWishTask().execute();
 	}
 	
+	public void onImageButtonClicked(View view) {
+		// The following code takes a real picture.
+		/*
+		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+	    if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+	        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+	    }
+	    */
+		// The following code should be used in place of taking a real picture.
+		mImageButton.setVisibility(View.GONE);
+		mImageView.setVisibility(View.VISIBLE);
+	}
+	
+	// This method is called on return from image capture.
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		mImageButton.setVisibility(View.GONE);
+		mImageView.setVisibility(View.VISIBLE);
+	    if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+	        Bundle extras = data.getExtras();
+	        Bitmap imageBitmap = (Bitmap) extras.get("data");
+	        mImageView.setImageBitmap(imageBitmap);
+	    }
+	}
+	
+	// The following is unnecessary, because all http requests can be done synch..ly in a single AsyncTask
+	/*
+	private String postImageAndGetId(Bitmap imageBitmap) {
+		// TODO
+		return "";
+	}
+	
+	private class PostImageTask extends AsyncTask<Void, Void, String> {
+
+		@Override
+		protected String doInBackground(Void... params) {
+			// TODO Auto-generated method stub
+			// if the imageview is visible, send the image.
+			if (mImageView.getVisibility() == View.VISIBLE) {
+				return "";
+			} else {
+				return "";
+			}
+		}
+		
+		protected void onPostExecute(String imageId) {
+			// imageId will be empty if no image was sent.
+		}
+		
+	}
+	*/
+	
 	private class NewWishPost extends HttpPost.SendableObject {
-		private String userEmail;
 		private String wishName;
 		private String wishDescription;
-		public NewWishPost(String _userEmail, String _wishName, String _wishDescription) {
-			url = "http://ec2-54-186-87-220.us-west-2.compute.amazonaws.com:3000/mobile/addWish/";
-			userEmail = _userEmail;
+		private String imageId;
+		public NewWishPost(String _userId, String _wishName, String _wishDescription, String _imageId) {
+			url = "http://ec2-54-186-87-220.us-west-2.compute.amazonaws.com:3000/user/"+_userId+"/items/add";
 			wishName = _wishName;
 			wishDescription = _wishDescription;
+			imageId = _imageId;
 		}
 		public String toJSON() {
 			JSONObject obj = new JSONObject();
 			try {
-				obj.put("userEmail", userEmail);
-				obj.put("wishName", wishName);
-				obj.put("wishDescription", wishDescription);
+				obj.put("itemName", wishName);
+				obj.put("description", wishDescription);
+				obj.put("preferredBrand", "none");
+				obj.put("approximatePrice", "0");
+				obj.put("imageId", imageId);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -100,11 +180,110 @@ public class NewWishActivity extends Activity {
 		}
 	}
 	
-	private class PostNewWishTask extends AsyncTask<NewWishPost, Void, String> {
+	private class NewImagePost extends HttpPost.SendableObject {
+		byte[] imageBytes;
+		public NewImagePost(byte[] _imageBytes, String _userId) {
+			url = "http://ec2-54-186-87-220.us-west-2.compute.amazonaws.com:3000/user/"+_userId+"/upload";
+			imageBytes = _imageBytes;
+		}
+		public void setConnectionProperties(HttpURLConnection conn) {
+			Log.d("tatewty","length: "+imageBytes.length);
+			//conn.setRequestProperty("Content-Length", ""+imageBytes.length);
+			//conn.setRequestProperty("enctype","multipart/form-data");
+			conn.setRequestProperty("Connection", "Keep-Alive");
+			conn.setRequestProperty("ENCTYPE","multipart/form-data");
+			conn.setRequestProperty("Content-Type", "multipart/form-data;boundary="+"*****");
+			conn.setRequestProperty("uploaded_file","test.png");
+			//conn.setRequestProperty("name", "userPhoto");
+			/*conn.setRequestProperty("Content-Type","binary/octet-stream");
+			conn.setRequestProperty("name","test");
+			conn.setRequestProperty("filename","test.png");
+			conn.setRequestProperty("originalFilename","test.png"); */
+			conn.setRequestProperty("Accept", "application/json");
+		}
+		public void writeHeader(OutputStream os) {
+			DataOutputStream dos = new DataOutputStream(os);
+			String twoHyphens = "--";
+			String boundary = "*****";
+			String lineEnd = "\r\n";
+			String fileName = "test.png";
+			try {
+				dos.writeBytes(twoHyphens + boundary + lineEnd);
+	            dos.writeBytes("Content-Disposition: form-data; name=\"userPhoto\";filename=\""
+                        + fileName + "\"" + lineEnd);
+	            dos.writeBytes(lineEnd);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				Log.e("tatewty","Error in header");
+			}
+		}
+		public void writeFooter(OutputStream os) {
+			DataOutputStream dos = new DataOutputStream(os);
+			String twoHyphens = "--";
+			String boundary = "*****";
+			String lineEnd = "\r\n";
+			try {
+				dos.writeBytes(lineEnd);
+                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				Log.e("tatewty","Error in footer");
+			} 
+		}
+		public byte[] getBytes() {
+			return imageBytes;
+		}
 		@Override
-		protected String doInBackground(NewWishPost... posts) {
+		public String toJSON() {
+			// This is unnecessary.
+			return null;
+		}
+	}
+	
+	private String postImageAndGetId(ConnectivityManager cm) {
+		mImageView.setDrawingCacheEnabled(true);
+		mImageView.buildDrawingCache();
+		Bitmap bm = mImageView.getDrawingCache();
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
+		NewImagePost post = new NewImagePost(stream.toByteArray(),mUserId);
+		String result = HttpPost.post(post, cm);
+		Log.d("tatewty",result);
+		try {
+			JSONObject res = new JSONObject(result);
+			JSONObject jsonResponse = res.getJSONObject("response");
+			String status = jsonResponse.getString("status");
+			if (status.equalsIgnoreCase("success")) {
+				JSONObject jsonMiscellaneous = jsonResponse.getJSONObject("miscellaneous");
+				String imageId = jsonMiscellaneous.getString("ImageId");
+				return imageId;
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "";
+		}
+		
+		return "";
+	}
+	
+	private class PostNewWishTask extends AsyncTask<Void, Void, String> {
+		@Override
+		protected String doInBackground(Void... params) {
 			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-			NewWishPost newWishPost = posts[0];
+			/* Create the post. */
+			EditText editTextWishIdea = (EditText) findViewById(R.id.editTextWishIdea);
+			String wishName = editTextWishIdea.getText().toString();
+			EditText editTextWishDescription = (EditText) findViewById(R.id.editTextWishDescription);
+			String wishDescription = editTextWishDescription.getText().toString();
+			// if the imageview is visible, send the image.
+			String imageId = "";
+			if (mImageView.getVisibility() == View.VISIBLE) {
+				imageId = postImageAndGetId(cm);
+			}
+			NewWishPost newWishPost = new NewWishPost(mUserId,wishName,wishDescription,imageId);
 			return HttpPost.post(newWishPost,cm);
 		}
 		@Override
@@ -114,7 +293,10 @@ public class NewWishActivity extends Activity {
 				// TODO: Notify user that there was a connection error.
 				return;
 			}
-			Log.d("tatewty",response);
+			//Log.d("tatewty",response);
+			Intent resultData = new Intent();
+			resultData.putExtra(WishlistActivity.result_shouldRefresh, true);
+			setResult(Activity.RESULT_OK, resultData);
 			finish();
 		}
 	}

@@ -22,8 +22,11 @@ import android.os.Build;
 
 public class WishlistActivity extends ListActivity {
 	public final static String param_userId = "param_userId";
+	public final static String result_shouldRefresh = "result_shouldRefresh";
+	public final static int request_shouldRefresh = 0;
 	
 	private String mUserId;
+	private Boolean mShouldRefresh;
 	
 	private View mWishlistGetStatusView;
 
@@ -36,6 +39,7 @@ public class WishlistActivity extends ListActivity {
 		
 		Intent intent = getIntent();
         mUserId = intent.getStringExtra(param_userId);
+        mShouldRefresh = false;
 
 		mWishlistGetStatusView = findViewById(R.id.wishlist_get_status);
 		showProgress(true);
@@ -44,6 +48,26 @@ public class WishlistActivity extends ListActivity {
 	    WishlistRequestPostTask task = new WishlistRequestPostTask();
 	    task.execute(post);
 	}
+	
+	protected void onResume() {
+		super.onResume();
+		if (mShouldRefresh) {
+			mShouldRefresh = false;
+			showProgress(true);
+			WishlistRequestPost post = new WishlistRequestPost(mUserId);
+		    WishlistRequestPostTask task = new WishlistRequestPostTask();
+		    task.execute(post);
+		}
+	}
+	
+    protected void onActivityResult(int requestCode, int resultCode,
+            Intent data) {
+        if (requestCode == request_shouldRefresh) {
+            if (resultCode == RESULT_OK) {
+                mShouldRefresh = data.getBooleanExtra(result_shouldRefresh, false);
+            }
+        }
+    }
 
 	/**
 	 * Set up the {@link android.app.ActionBar}, if the API is available.
@@ -59,7 +83,7 @@ public class WishlistActivity extends ListActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.wishlist, menu);
-		return true;
+	    return super.onCreateOptionsMenu(menu);
 	}
 	
 	/**
@@ -104,6 +128,11 @@ public class WishlistActivity extends ListActivity {
 			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
 			//
 			NavUtils.navigateUpFromSameTask(this);
+			return true;
+		case R.id.action_add_wish:
+	    	Intent intent = new Intent(this, NewWishActivity.class);
+	    	intent.putExtra(NewWishActivity.param_userId, mUserId);
+			startActivityForResult(intent,request_shouldRefresh);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
