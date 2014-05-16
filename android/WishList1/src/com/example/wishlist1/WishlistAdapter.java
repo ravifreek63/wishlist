@@ -63,7 +63,8 @@ public class WishlistAdapter extends BaseAdapter {
 	    LayoutInflater inflater = (LayoutInflater) mContext
 	            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	    View rowView = inflater.inflate(R.layout.wishrowlayout, parent, false);
-	    TextView textView = (TextView) rowView.findViewById(R.id.label);
+	    TextView textViewLabel = (TextView) rowView.findViewById(R.id.label);
+	    TextView textViewDescr = (TextView) rowView.findViewById(R.id.descr);
 	    ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
 	    imageView.setVisibility(View.GONE);
 	    try {
@@ -74,12 +75,14 @@ public class WishlistAdapter extends BaseAdapter {
 	    	if (! itemImageId.equalsIgnoreCase("null")) {
 	    		PopulateImageParameters params = new PopulateImageParameters(itemImageId,imageView);
 	    		(new PopulateImageViewTask()).execute(params);
+	    		Log.d("tatewty",itemImageId);
 	    	}
-			textView.setText(itemName+" $ "+itemDescription+" $ "+itemImageId);
+			textViewLabel.setText(itemName);
+			textViewDescr.setText(itemDescription);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			textView.setText("Error.");
+			textViewLabel.setText("Error.");
 		}
 	    return rowView;
 	}

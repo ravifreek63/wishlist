@@ -114,15 +114,17 @@ public class NewWishActivity extends Activity {
 	
 	public void onImageButtonClicked(View view) {
 		// The following code takes a real picture.
-		/*
+		
 		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 	    if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
 	        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
 	    }
-	    */
+	    
 		// The following code should be used in place of taking a real picture.
+		/*
 		mImageButton.setVisibility(View.GONE);
 		mImageView.setVisibility(View.VISIBLE);
+		*/
 	}
 	
 	// This method is called on return from image capture.
