@@ -187,7 +187,7 @@ public class WishlistActivity extends ListActivity {
 					JSONObject jsonMiscellaneous = jsonResponse.getJSONObject("miscellaneous");
 					JSONArray jsonRows = jsonMiscellaneous.getJSONArray("rows");
 					
-					WishlistAdapter adapter = new WishlistAdapter(WishlistActivity.this,jsonRows);
+					WishlistAdapter adapter = new WishlistAdapter(WishlistActivity.this,jsonRows,mUserId,WishlistActivity.this);
 					setListAdapter(adapter);
 				}
 			} catch (JSONException e) {

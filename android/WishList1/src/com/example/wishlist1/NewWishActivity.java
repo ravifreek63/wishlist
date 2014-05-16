@@ -94,6 +94,15 @@ public class NewWishActivity extends Activity {
 		finish();
 	}
 	
+	@Override
+	public void onBackPressed() {
+		Log.d("tatewty","back button pressed.");
+		Intent resultData = new Intent();
+		resultData.putExtra(WishlistActivity.result_shouldRefresh, false);
+		setResult(Activity.RESULT_OK, resultData);
+		finish();
+	}
+	
 	public void onAddButtonClicked(View view) {
 		/*EditText editTextWishIdea = (EditText) findViewById(R.id.editTextWishIdea);
 		String wishName = editTextWishIdea.getText().toString();
@@ -128,32 +137,6 @@ public class NewWishActivity extends Activity {
 	    }
 	}
 	
-	// The following is unnecessary, because all http requests can be done synch..ly in a single AsyncTask
-	/*
-	private String postImageAndGetId(Bitmap imageBitmap) {
-		// TODO
-		return "";
-	}
-	
-	private class PostImageTask extends AsyncTask<Void, Void, String> {
-
-		@Override
-		protected String doInBackground(Void... params) {
-			// TODO Auto-generated method stub
-			// if the imageview is visible, send the image.
-			if (mImageView.getVisibility() == View.VISIBLE) {
-				return "";
-			} else {
-				return "";
-			}
-		}
-		
-		protected void onPostExecute(String imageId) {
-			// imageId will be empty if no image was sent.
-		}
-		
-	}
-	*/
 	
 	private class NewWishPost extends HttpPost.SendableObject {
 		private String wishName;
@@ -187,7 +170,7 @@ public class NewWishActivity extends Activity {
 			imageBytes = _imageBytes;
 		}
 		public void setConnectionProperties(HttpURLConnection conn) {
-			Log.d("tatewty","length: "+imageBytes.length);
+			Log.d("tatewty","size of image to upload: "+imageBytes.length);
 			//conn.setRequestProperty("Content-Length", ""+imageBytes.length);
 			//conn.setRequestProperty("enctype","multipart/form-data");
 			conn.setRequestProperty("Connection", "Keep-Alive");
@@ -250,7 +233,6 @@ public class NewWishActivity extends Activity {
 		bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
 		NewImagePost post = new NewImagePost(stream.toByteArray(),mUserId);
 		String result = HttpPost.post(post, cm);
-		Log.d("tatewty",result);
 		try {
 			JSONObject res = new JSONObject(result);
 			JSONObject jsonResponse = res.getJSONObject("response");
