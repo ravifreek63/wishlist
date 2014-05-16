@@ -2,26 +2,35 @@
 <html>
   <head>
     <title>Home</title>
-      <script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js"></script>
     <link href="/bootstrap-3.1.1-dist/css/bootstrap.css" rel="Stylesheet">
     <link href="/stylesheets/home-style.css" rel="stylesheet">
     <script src="/scripts/jquery.md5.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   </head>
   <body>
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container-fluid">
+    <div class="container-fluid">
 	<div class="navbar-header">
 	</div>
 	<div class="navbar-collapse collapse">
+	<a class="brand" href="#"> <img src="http://i.imgur.com/ShustCV.png" width="70" height="45"/> </a>
         <ul class="nav navbar-nav navbar-right">
             <li>
-                <a href="#" class="btn btn-inverse btn-small" id="logout_btn">Logout</a>
+                <a href="#" class="btn btn-inverse btn-small" style="margin-right:100px;" id="logout_btn">Logout</a>
             </li>
         </ul>
+
         <ul class="nav navbar-nav navbar-right">
-           <li><a href="#" class="btn btn-inverse btn-small" id="home_btn">Home</a></li>
-         </ul>
+                   <li><a href="#" class="btn btn-inverse btn-small" style="margin-right:-10px;" id="feedback_btn">Feedback</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                                           <li><a href="#" class="btn btn-inverse btn-small"  style="margin-right:-10px;"
+                                           id="notification_btn">Notifications</a></li>
+                                        </ul>
+                <ul class="nav navbar-nav navbar-right">
+                           <li><a href="#" class="btn btn-inverse btn-small" id="home_btn">Home</a></li>
+                        </ul>
 	</div>
       </div>
     </div>
@@ -30,45 +39,50 @@
 	<!-- The sidebar -->
 	<div class="col-sm-3 col-md-2 sidebar">
 	  <ul id="friend_list" class="nav nav-sidebar">
-	    <li class="active" style ="margin-top:-20px;">
-	      <a>Friend List</a>
+	   <h3 style="text-align: left; margin-left: 30px;">Friend List</h3>
+	    <div class="input-group">
+                  <form accept-charset="UTF-8" role="form" id="signup_form">
+                    <fieldset>
+                      <div class="form">
+                          <input type="text" style="width:130px;float:left; font-size:13px;"class="form-control"
+                          placeholder="Add a friend..." id="add_friend_textbox">
+                          <input class="btn btn-default" type="submit" id="add_friend_btn" value="+"></button>
+                      </div>
+                    </fieldset>
+                  </form>
+                </div>
+                <li style ="margin-top:0px;">
+
+        <a class="sidebar-elem"> Friend 1 </a>
+        <a> Friend 2 </a>
 	    </li>
 	  </ul>
 	  <script>
-	  friendName='';
+  	  friendName='';
 
-	  $(function() {
-                  $("#add_friend_btn").click(function() {
-                      var emailId = $('#add_friend_textbox').val().trim();
-                      var dataString = 'emailId=' + emailId;
-                      $.ajax({
-                        type: "POST",
-                        url: "/user/<%= userId %>/friends/add",
-                        data: dataString,
-                        success: function(data) {
-                            var response = $.parseJSON(data).response;
-                            if (response.code == 200) {
-                                location.reload();
-                            }
-                        }
-                      });
-                  });
-              });
+      function checkIfEmailInString(text) {
+          var re = /(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/;
+          return re.test(text);
+      }
+
+  	  $(function() {
+        $("#add_friend_btn").click(function() {
+          var emailId = $('#add_friend_textbox').val().trim();
+          var dataString = 'emailId=' + emailId;
+          $.ajax({
+            type: "POST",
+            url: "/user/<%= userId %>/friends/add",
+            data: dataString,
+            success: function(data) {
+                var response = $.parseJSON(data).response;
+                if (response.code == 200) 
+                    location.reload();
+            }
+          });
+        });
+    }
 	  </script>
 
-	  <div class="input-group">
-
-	  <form accept-charset="UTF-8" role="form" id="signup_form">
-          <fieldset>
-              <div class="form-group">
-                  <input type="text" style="width:130px;float:left; font-size:13px"class="form-control" placeholder="Add a friend..." id="add_friend_textbox">
-                  <input class="btn btn-default" type="submit" id="add_friend_btn" value="+"></button>
-              </div>
-
-
-          </fieldset>
-      </form>
-	  </div>
 	</div>
     <script>
         $(function(){
@@ -110,7 +124,7 @@
 	<!-- The main content area -->
 	<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 	  <div class="page-header">
-            <h3 style="display:inline-block;margin: -20px 0 20px;"> Welcome <%=name%> </h3>
+            <h3 style="display:inline-block;margin: -20px 0 20px;text-transform:capitalize;">Welcome <%=name%> </h3>
 	  </div>
         <div id= "alertW" class="alert alert-warning" style="visibility:hidden;">
               <div id="text5"></div>
@@ -121,10 +135,6 @@
           </table>
          </div>
     </div>
-
-
-
-
           <script>
 
               function fillTable(wishes, viewFriend) {
@@ -250,8 +260,6 @@
     <!-- Scripts placed at end to help pages load faster -->
     <script src="/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
 
-
-
     <script>
       // Define a list item
       function friendListItemOld(name,id) {
@@ -330,7 +338,7 @@
           rows = data.response.miscellaneous.rows;
             console.log(rows);
 	  for (var i=0; i<rows.length; i++) {
-            var name = rows[i].Name;
+            var name = rows[i].RelationshipAlias;
 	        var id = rows[i].UserId;
 	        $("#friend_list").append(friendListItem(name,id));
 	    }
@@ -376,10 +384,22 @@
       </div>
     </div>
 
+	  <form id="uploadForm" enctype="multipart/form-data" action="/user/<%= userId %>/upload" method="post" style="visibility:hidden;">
+          <fieldset>
+              <div class="form-group">
+                  <input type="file" name="userPhoto" id ="userPhotoInput" style="margin-left:250px;">
+              </div>
+          </fieldset>
+      </form>
+
+    <span id="status" />
+    <img id="uploadedImage" style="margin-left:250px;"/>
 
     <!-- Scripts placed at end to help pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
+    <script src="/scripts/upload.js"></script>
+    <script src="http://malsup.github.com/jquery.form.js"></script>
     <!-- This seems irrelevant. <script src="/bootstrap-3.1.1-dist/js/docs.min.js"></script> -->
 
   </body>

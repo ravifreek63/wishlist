@@ -76,6 +76,7 @@ exports.getWishListId = getWishListId;
 
 var generateWishList = function generateWishList (wishListId, userId, callback){
     var query = "INSERT INTO User_WishList (UserId, WishListId) VALUES ('" + userId + "', '"+ wishListId + "');";
+
     connection.query (query, function(err, rows, fields){
 	    if (err != undefined)
 		console.log ("Error in inserting wishlistid into wishlist table, error:" + err);

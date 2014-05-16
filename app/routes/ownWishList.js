@@ -2,6 +2,7 @@
 var connection = require('../data/dataConnection.js').connection;
 var methods = require('../helperMethods/methods.js');
 var gV = require('../globals/globalVariables.js');
+var fs = require('fs');
 
 /*
  {
@@ -15,7 +16,7 @@ exports.addItems = function (req, res){
     var preferredBrand = req.body.preferredBrand;
     var approximatePrice = req.body.approximatePrice;
     var description = req.body.description;
-
+    var imageId = req.body.imageId;
     var userId = req.params.userId;
     var resMsg = "added items successfully";
     var resMsgErr = "Error in adding items";
@@ -40,9 +41,9 @@ exports.addItems = function (req, res){
                             if (err == undefined){
                                 var wishListId = obj.wishListId;
                                 var query = "Insert Into Wish_WishList (WishListId, WishId, ItemId, UserId, Description, " +
-                                    "PreferredBrand, ApproxPrice) Values ('" +
+                                    "PreferredBrand, ApproxPrice, ImageId) Values ('" +
                                     wishListId + "','" + wishId + "','" + itemId +  "','" +  userId + "','" + description +
-                                    "','" + preferredBrand + "','" + approximatePrice + "');";
+                                    "','" + preferredBrand + "','" + approximatePrice + "','" + imageId + "');";
                                 console.log (query);
                                 methods.runQuery(resMsg, resMsgErr, query, res);
                             } else {
@@ -139,3 +140,66 @@ exports.editItems = function (req, res){
     var query = "UPDATE Item_Details SET Price = '" + itemObj.ApproxPrice +"',ItemDescription = '" + itemObj.Description + "' WHERE ItemId = '" + itemId + "';";
     methods.runQuery ("Items updated successfully", "Error in updating item" , query, res);
 };
+
+exports.uploadFile = function(req, res){
+    var userId = req.params.userId;
+    var imageId = methods.generateUUID ();
+    var originalFileName = req.files.userPhoto.originalFilename;
+    var filePath = __dirname + "/../public/uploads/" + originalFileName;
+    var resMsgErr = "Error in file upload";
+    function resCb (error, resObj){
+        res.send (JSON.stringify({error: error, response :resObj}));
+    }
+    var fields = {
+        ImageId: imageId,
+        ImageName: originalFileName,
+        UserId: userId
+    };
+    var imageQ = methods.queryBuilder(gV.tableNames.Image_Store,fields , gV.queryTypes.INSERT);
+    function imageQH(err){
+        if (err == undefined){
+            fs.readFile(req.files.userPhoto.path, function (err, data) {
+                fs.writeFile(filePath, data, function (err) {
+                    if(err == undefined) {
+                        methods.createResponse (gV.success.code, "upload successful", gV.success.status, {
+                            ImageId: imageId,
+                            path: "/uploads/"+originalFileName
+                        }, resCb);
+                    } else {
+                        console.log ("Error in file upload:"+ err);
+                        methods.createResponse (gV.failure.code, resMsgErr, gV.failure.status, {error: err},  resCb);
+                    }
+                });
+            });
+        } else {
+            methods.queryError(imageQ, err);
+            methods.createResponse (gV.failure.code, resMsgErr, gV.failure.status, {error: err},  resCb);
+        }
+    }
+    connection.query(imageQ, imageQH);
+};
+
+exports.getFile = function (req, res){
+    var userId = req.params.userId;
+    var imageId = req.params.imageId;
+    var checkPQ = "SELECT * from Image_Store where ImageId = '" + imageId + "';";
+    methods.logQuery(checkPQ);
+    function checkPQH(err, rows){
+        if (err == undefined){
+            if (rows.length > 0) {
+                var filePath = "/uploads/" + rows[0].ImageName;
+                res.send ({
+                    path: filePath
+                });
+                console.log ("here");
+            } else {
+                console.log ("Image not found, Id:" + imageId);
+                res.send({path:""});
+            }
+        } else {
+            res.send (err);
+        }
+    }
+    connection.query(checkPQ, checkPQH);
+};
+
