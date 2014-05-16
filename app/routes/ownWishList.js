@@ -4,6 +4,7 @@ var methods = require('../helperMethods/methods.js');
 var gV = require('../globals/globalVariables.js');
 var fs = require('fs');
 
+
 /*
  {
  "itemId": "f61827d6-2a21-44ec-8a32-49925e2758e4",
@@ -144,7 +145,7 @@ exports.editItems = function (req, res){
 exports.uploadFile = function(req, res){
     var userId = req.params.userId;
     var imageId = methods.generateUUID ();
-    var originalFileName = req.files.userPhoto.originalFilename;
+    var originalFileName = "p_" + new Date().getTime() + "_"+ req.files.userPhoto.originalFilename;
     var filePath = __dirname + "/../public/uploads/" + originalFileName;
     var resMsgErr = "Error in file upload";
     function resCb (error, resObj){
