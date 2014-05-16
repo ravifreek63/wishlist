@@ -110,7 +110,7 @@ exports.removeItems = function (req, res){
     var userId = req.params.userId;
     console.log (req.body.items);
     var items = (req.body.items);
-    var query = "DELETE FROM Wish_WishList where ItemId IN (" + methods.arToStringArray (items) + ") AND UserID = '" + userId + "';";
+    var query = "DELETE FROM Wish_WishList where WishId IN (" + methods.arToStringArray (items) + ") AND UserID = '" + userId + "';";
     var resMsg = "Deleted Items successfully";
     var resMsgErr = "Error in deleting Items";
     methods.runQuery (resMsg, resMsgErr, query, res);
@@ -202,4 +202,42 @@ exports.getFile = function (req, res){
     }
     connection.query(checkPQ, checkPQH);
 };
+
+exports.getPath = function (req, res){
+    console.log ("in getPath");
+    var wishId = req.params.wishId;
+    console.log("wishId:" + wishId);
+    var imagePath = "";
+    var imageId = '';
+    var getImageIdQ = "SELECT * from Wish_WishList where WishId='"+wishId+"';";    
+    function getImageIdQH(err, rows){
+        if (err == undefined){            
+            if (rows.length > 0){
+            imageId = rows[0].ImageId;
+            var getImagePathQ = "SELECT * from Image_Store where ImageId='"+imageId+"';"
+            function getImagePathQH(err_ip, rows_ip){
+                if (err_ip == undefined){
+                    if(rows_ip.length > 0){
+                        imagePath = rows_ip[0].ImageName;
+                    }  
+                        res.send ({
+                        path: imagePath
+                        });                    
+                } else {
+                    printf("err: " + err_ip + ", in getting image path, query:" + getImagePathQ);
+                    res.send (err_ip);                    
+                }
+            }
+            methods.logQuery(getImagePathQ);
+            connection.query(getImagePathQ, getImagePathQH);
+        }
+        } else {
+            console.log ("err:" + err + ", while running query: " + getImageIdQ);
+            res.send (err);
+        }
+    }
+    methods.logQuery(getImageIdQ);
+    connection.query(getImageIdQ, getImageIdQH);
+}
+
 

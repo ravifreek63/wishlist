@@ -63,8 +63,7 @@
       }
 
   	  $(function() {
-        $("#add_friend_btn").click(function() {
-          alert("in add a friend");          
+        $("#add_friend_btn").click(function() {                
           var emailId = $('#add_friend_textbox').val().trim();
           var dataString = 'emailId=' + emailId;
           $.ajax({
@@ -157,7 +156,8 @@
                       var cell3 = row.insertCell(2);
                       var cell4 = row.insertCell(3);
                       var cell5 = row.insertCell(4);
-                      var cell6 = row.insertCell(5);
+                      var cell6 = row.insertCell(5);  
+                      var cell7 = row.insertCell(6);    
 
                       // Add some text to the new cells:
                       cell1.innerHTML = wishes[count].ItemName;
@@ -165,15 +165,19 @@
                       cell3.innerHTML = wishes[count].PreferredBrand;
                       cell4.innerHTML = "$ "+wishes[count].ApproxPrice;
                       cell5.innerHTML = moment(wishes[count].CreationTime).format('MMMM Do YYYY, h:mm:ss a');
-                      if (viewFriend == 0)
-                        var button = '<input type="button" id="button_'+ wishes[count].ItemId+'" class="btn btn-danger ' +
+                      if (viewFriend == 0){
+                        var button = '<input type="button" id="button_'+ wishes[count].WishId+'" class="btn btn-danger ' +
                                 'btn-mini btn-deleteItem" value="Delete"></input>';
+                        var button1 = '<input type="button" data-target="#viewImageModal" data-toggle="modal" id="button_'+ wishes[count].WishId+'" class="btn ' +
+                                'btn-mini btn-viewItem" value="ViewImage"></input>';
+                      }
                       else if (viewFriend == 1) {
                           var action = "reserveItem('"+ wishes[count].WishId +"')";
-                          var button = '<input type="button" onclick='+action+' id="button_' + wishes[count].ItemId + '"' +
+                          var button = '<input type="button" onclick='+action+' id="button_' + wishes[count].WishId + '"' +
                                   'class="btn btn-info btn-mini btn-reserveItem" value="Reserve"></input>';
                       }
                       cell6.innerHTML = button;
+                      cell7.innerHTML = button1;
                   }
 
                   if (wishes.length > 0){
@@ -185,6 +189,7 @@
                       var cell4 = row.insertCell(3);
                       var cell5 = row.insertCell(4);
                       var cell6 = row.insertCell(5);
+                      var cell7 = row.insertCell(6);
 
                       // Add some text to the new cells:
                       cell1.innerHTML = "<b>Item Name</b>";
@@ -193,6 +198,7 @@
                       cell4.innerHTML = "<b>Approx Price</b>";
                       cell5.innerHTML = "<b>Date Added </b>";
                       cell6.innerHTML = "Manage";
+                      cell7.innerHTML = "View";
 
                   }
               }
@@ -206,15 +212,53 @@
                           function(response) { // handles the response
                               location.reload();
                           });
-              });
+              });   
 
-              function reserveItem(wishId){
+               $('.btn-viewItem').click(function () {
+                 var id = this.id.replace('button_', '');                 
+                 $.get("/user/<%= userId %>/wish/"+id+"/getPath",{},
+                          function(response) { // handles the response                              
+                              var imageUrlOnServer = response.path;      
+                              if (imageUrlOnServer == ""){
+                              document.getElementById("uploadedImageLabel").style.visibility = "visible";
+                              document.getElementById("uploadedImage").style.visibility = "hidden";                              
+                              $('#uploadedImage').attr('visible', "false");                              
+                              } else {                         
+                              $('#uploadedImage').attr('src', "/uploads/"+imageUrlOnServer);                              
+                              document.getElementById("uploadedImageLabel").style.visibility = "hidden"; 
+                              document.getElementById("uploadedImage").style.visibility = "visible";                             
+                            }
+                          });
+              }); 
+
+               function reserveItem(wishId){
                   $.post("/user/<%= userId%>/friendListAction/reserveItem", {'wishId': wishId}, function(response){
                         console.log (response);
                   });
               }
 
           </script>
+
+
+
+<!-- Modal -->
+          <div class="modal fade" id="viewImageModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                          <h4 class="modal-title" id="myModalLabel"> Wish Image </h4>
+                      </div>
+                      <div>                         
+                         <img id="uploadedImage" style="margin-left:100px;", src=''/>                         
+                      </div>
+                      <div>
+                        <span class="label label-info" id="uploadedImageLabel" style="margin-left:200px;" visible="false"> Image Not Uploaded !!</span>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          
 
           <button id="add_item_btn" class="btn btn-primary btn-large" style="margin-left:260px; margin-top: -20px; width:200px" data-target="#addItemModal" data-toggle="modal">
           <i class="icon-white icon-plus"></i> Add an item </button>

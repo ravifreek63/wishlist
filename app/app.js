@@ -93,6 +93,7 @@ app.post('/user/:userId/items/edit', ownWishList.editItems); // edit an item in 
 app.post('/user/:userId/items/remove', ownWishList.removeItems); // remove an item from the wishlist , bulk query
 
 /* Friend list routes. */
+app.get('/user/:userId/wish/:wishId/getPath', ownWishList.getPath); // view all the friends of the user
 app.get('/user/:userId/friend_list', ownFriendList.friend_list_view); // view all the friends of the user
 app.get('/user/:userId/friends/get', ownFriendList.getFriends); // get a list of all the friends of the user
 app.post('/user/:userId/friends/add', ownFriendList.addFriend); // add a friend
