@@ -168,15 +168,17 @@
                       if (viewFriend == 0){
                         var button = '<input type="button" id="button_'+ wishes[count].WishId+'" class="btn btn-danger ' +
                                 'btn-mini btn-deleteItem" value="Delete"></input>';
+                      var button1 = '<input type="button" data-target="#viewImageModal" data-toggle="modal" id="view_button_'+ wishes[count].WishId+'" class="btn ' +
+                                'btn-mini btn-viewItem" value="ViewImage"></input>';                                
                       }
                       else if (viewFriend == 1) {
                           var action = "reserveItem('"+ wishes[count].WishId +"')";
                           var button = '<input type="button" onclick='+action+' id="button_' + wishes[count].WishId + '"' +
                                   'class="btn btn-info btn-mini btn-reserveItem" value="Reserve"></input>';
-                      }
-                                              var button1 = '<input type="button" data-target="#viewImageModal" data-toggle="modal" id="button_'+ wishes[count].WishId+'" class="btn ' +
-                                'btn-mini btn-viewItem" value="ViewImage"></input>';
-
+                          var action1 = "viewItem('"+ wishes[count].WishId +"')";
+                          var button1 = '<input type="button" onclick='+action1+' data-target="#viewImageModal" data-toggle="modal" id="view_button_'+ wishes[count].WishId+'" class="btn ' +
+                                'btn-mini btn-viewItem" value="ViewImage"></input>';                                  
+                      }                    
                       cell6.innerHTML = button;
                       cell7.innerHTML = button1;
                   }
@@ -215,9 +217,13 @@
                           });
               });   
 
-               $('.btn-viewItem').click(function () {
-                 var id = this.id.replace('button_', '');                 
-                 $.get("/user/<%= userId %>/wish/"+id+"/getPath",{},
+               $('.btn-viewItem').click(function () {                 
+                 var id = this.id.replace('view_button_', '');                 
+                 viewItem(id);
+              }); 
+
+              function viewItem(id){               
+                $.get("/user/<%= userId %>/wish/"+id+"/getPath",{},
                           function(response) { // handles the response                              
                               var imageUrlOnServer = response.path;      
                               if (imageUrlOnServer == ""){
@@ -230,7 +236,7 @@
                               document.getElementById("uploadedImage").style.visibility = "visible";                             
                             }
                           });
-              }); 
+              }
 
                function reserveItem(wishId){
                   $.post("/user/<%= userId%>/friendListAction/reserveItem", {'wishId': wishId}, function(response){
@@ -359,8 +365,8 @@
                       var jsonR = $.parseJSON(response).response;
                       if (jsonR.code == 200){
                             fillTable (jsonR.miscellaneous.rows, 1);
-                            if (jsonR.miscellaneous.rows.length == 0){
-                                //document.getElementById("").
+                            if (jsonR.miscellaneous.rows.length > 0){
+                                document.getElementById("alertW").style.visibility = 'hidden';
                             }
                         }
                   });
