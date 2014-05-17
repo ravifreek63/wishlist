@@ -51,7 +51,7 @@ CREATE TABLE `Group_Relationships` (
   `CreationTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `RelationshipAlias` varchar(36) DEFAULT NULL,
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -105,7 +105,7 @@ CREATE TABLE `Item_Details` (
   `CreationTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `Brand` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -163,8 +163,9 @@ CREATE TABLE `Wish_WishList` (
   `Description` varchar(100) DEFAULT NULL,
   `PreferredBrand` varchar(30) DEFAULT NULL,
   `ImageId` varchar(36) DEFAULT NULL,
+  `ImageName` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -176,4 +177,4 @@ CREATE TABLE `Wish_WishList` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-05-16 15:24:22
+-- Dump completed on 2014-05-17  0:45:22
