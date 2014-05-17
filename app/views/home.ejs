@@ -145,8 +145,20 @@
                       table.deleteRow (x);
                   }
 
-
+                  var isReservedByMe = 0;
                   for (var count = 0; count < wishes.length; count++) {
+                    isReservedByMe = 0;
+                      if(viewFriend == 1){
+                        if (wishes[count].IsReserved == 1){                        
+                          if (wishes[count].ReservedBy == "<%= userId %>"){
+                            isReservedByMe = 1;
+                          } else {
+                            continue;
+                          } 
+                        }
+                      }
+                        
+
                       // Create an empty <tr> element and add it to the 1st position of the table:
                       var row = table.insertRow(0);
 
@@ -172,12 +184,19 @@
                                 'btn-mini btn-viewItem" value="ViewImage"></input>';                                
                       }
                       else if (viewFriend == 1) {
+                        if (isReservedByMe == 1){
+                          var button = '<input type="button" id="button_' + wishes[count].WishId + '"' +
+                                  'class="btn btn-success btn-mini btn-reserveItem" value="Reserved"></input>';
+                        }else{
                           var action = "reserveItem('"+ wishes[count].WishId +"')";
                           var button = '<input type="button" onclick='+action+' id="button_' + wishes[count].WishId + '"' +
                                   'class="btn btn-info btn-mini btn-reserveItem" value="Reserve"></input>';
+                          }
                           var action1 = "viewItem('"+ wishes[count].WishId +"')";
                           var button1 = '<input type="button" onclick='+action1+' data-target="#viewImageModal" data-toggle="modal" id="view_button_'+ wishes[count].WishId+'" class="btn ' +
-                                'btn-mini btn-viewItem" value="ViewImage"></input>';                                  
+                                'btn-mini btn-viewItem" value="ViewImage"></input>'; 
+
+
                       }                    
                       cell6.innerHTML = button;
                       cell7.innerHTML = button1;
@@ -240,7 +259,10 @@
 
                function reserveItem(wishId){
                   $.post("/user/<%= userId%>/friendListAction/reserveItem", {'wishId': wishId}, function(response){
-                        console.log (response);
+                        var action = "reserveItem('"+ wishId +"')";
+                        document.getElementById("button_"+wishId).className= 'btn btn-success btn-mini btn-reserveItem';
+                        document.getElementById("button_"+wishId).value= 'Reserved';
+                          
                   });
               }
 

@@ -92,15 +92,29 @@ exports.getItems = function (req, res){
     methods.runQuery (resMsg, resMsgErr, query, res);
 };
 
+
+
 exports.getItemsFriend = function (req, res){
     var userId = req.params.friendId;
     var query = "SELECT * FROM Wish_WishList As W JOIN Item_Details As I ON I.ItemId = W.ItemId WHERE UserId = '" +
-        userId + "' AND W.IsReserved = '0';";
+        userId + "';";
     console.log ("In function getItems, query:" + query);
     var resMsg = "Get Items query successful";
     var resMsgErr = "Get Items query failed";
     methods.runQuery (resMsg, resMsgErr, query, res);
 };
+
+exports.getItemsFriendRes = function (req, res){
+    var userId = req.params.friendId;
+    var userIdOwn = req.params.userId;
+    var query = "SELECT * FROM Wish_WishList As W JOIN Item_Details As I ON I.ItemId = W.ItemId WHERE UserId = '" +
+        userId + "' AND W.IsReserved = '1' AND W.ReservedBy = '"+ userIdOwn +"';";
+    console.log ("In function getItems, query:" + query);
+    var resMsg = "Get Items query successful";
+    var resMsgErr = "Get Items query failed";
+    methods.runQuery (resMsg, resMsgErr, query, res);
+};
+
 
 
 /*

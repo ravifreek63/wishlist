@@ -89,6 +89,7 @@ app.get('/home/user/:userId', home.home);
 app.post('/user/:userId/items/add', ownWishList.addItems); // add items to own wish list , single item 
 app.get('/user/:userId/items/get', ownWishList.getItems);  // get all the items , bulk query
 app.get('/user/:userId/items/:friendId/getFriend', ownWishList.getItemsFriend);  // get all the items , bulk query
+app.get('/user/:userId/items/:friendId/getFriendRes', ownWishList.getItemsFriendRes);  // get all the items , bulk query
 app.post('/user/:userId/items/edit', ownWishList.editItems); // edit an item in the wishlist 
 app.post('/user/:userId/items/remove', ownWishList.removeItems); // remove an item from the wishlist , bulk query
 
