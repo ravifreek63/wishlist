@@ -18,12 +18,14 @@ exports.addItems = function (req, res){
     var approximatePrice = req.body.approximatePrice;
     var description = req.body.description;
     var imageId = req.body.imageId;
+    var imageName='';
     var userId = req.params.userId;
     var resMsg = "added items successfully";
     var resMsgErr = "Error in adding items";
 
     var wishId = methods.generateUUID (); // Check if the UUID already exists or not
     var itemId ; //= methods.generateUUID (); // Need to get the item id from the item name
+    var query_imageName="SELECT * from Image_Store where ImageId='"+imageId+"';"
     var query1 = "SELECT * from Item_Details Where ItemName Like '%" + itemName + "%' AND " +
         "Brand Like '%"+preferredBrand+"%';";
     console.log (query1);
@@ -42,9 +44,9 @@ exports.addItems = function (req, res){
                             if (err == undefined){
                                 var wishListId = obj.wishListId;
                                 var query = "Insert Into Wish_WishList (WishListId, WishId, ItemId, UserId, Description, " +
-                                    "PreferredBrand, ApproxPrice, ImageId) Values ('" +
+                                    "PreferredBrand, ApproxPrice, ImageId, ImageName) Values ('" +
                                     wishListId + "','" + wishId + "','" + itemId +  "','" +  userId + "','" + description +
-                                    "','" + preferredBrand + "','" + approximatePrice + "','" + imageId + "');";
+                                    "','" + preferredBrand + "','" + approximatePrice + "','" + imageId + "','"+ imageName+"');";
                                 console.log (query);
                                 methods.runQuery(resMsg, resMsgErr, query, res);
                             } else {
@@ -63,10 +65,10 @@ exports.addItems = function (req, res){
                 methods.getWishListId (userId, function(err, obj){
                     if (err == undefined){
                         var wishListId = obj.wishListId;
-                        var query = "Insert Into Wish_WishList (WishListId, WishId, ItemId, UserId, Description, " +
-                            "PreferredBrand, ApproxPrice) Values ('" +
-                            wishListId + "','" + wishId + "','" + itemId +  "','" +  userId + "','" + description +
-                            "','" + preferredBrand + "','" + approximatePrice + "');";
+                                var query = "Insert Into Wish_WishList (WishListId, WishId, ItemId, UserId, Description, " +
+                                    "PreferredBrand, ApproxPrice, ImageId, ImageName) Values ('" +
+                                    wishListId + "','" + wishId + "','" + itemId +  "','" +  userId + "','" + description +
+                                    "','" + preferredBrand + "','" + approximatePrice + "','" + imageId + "','"+ imageName+"');";
                         console.log (query);
                         methods.runQuery(resMsg, resMsgErr, query, res);
                     } else {
@@ -80,7 +82,19 @@ exports.addItems = function (req, res){
             res.send(errQ1);
         }
     }
-    connection.query(query1, queryHandler1);
+    function query_imageNameH(err, rows){
+        if (err == undefined){
+            if (rows.length > 0){
+             imageName = rows[0].ImageName; 
+            } 
+            connection.query(query1, queryHandler1);
+        } else {
+            console.log('err:' + err + 'query:' + query_imageName);
+            res.send(err);
+        }
+    }
+    methods.logQuery(query_imageName);
+    connection.query(query_imageName, query_imageNameH);
 };
 
 exports.getItems = function (req, res){

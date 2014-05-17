@@ -1,8 +1,11 @@
 package com.example.wishlist1;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 
 
 public class WishlistAdapter extends BaseAdapter {
@@ -60,25 +64,25 @@ public class WishlistAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-	    LayoutInflater inflater = (LayoutInflater) mContext
+		System.out.println("In getView:");
+		LayoutInflater inflater = (LayoutInflater) mContext
 	            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	    View rowView = inflater.inflate(R.layout.wishrowlayout, parent, false);
 	    TextView textViewLabel = (TextView) rowView.findViewById(R.id.label);
 	    TextView textViewDescr = (TextView) rowView.findViewById(R.id.descr);
-	    ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
-	    imageView.setVisibility(View.GONE);
+	    ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);	       	    
+	    
+
 	    try {
-	    	JSONObject jsonObject = new JSONObject(mItems.getString(position));
+	    	JSONObject jsonObject = new JSONObject(mItems.getString(position));	    	
 	    	String itemName = jsonObject.getString("ItemName");
-	    	String itemDescription = jsonObject.getString("Description");
-	    	String itemImageId = jsonObject.getString("ImageId");
-	    	if (! itemImageId.equalsIgnoreCase("null")) {
-	    		PopulateImageParameters params = new PopulateImageParameters(itemImageId,imageView);
-	    		(new PopulateImageViewTask()).execute(params);
-	    		Log.d("tatewty",itemImageId);
-	    	}
+	    	String itemDescription = jsonObject.getString("Description");	    	
+	    	String itemImageName = jsonObject.getString("ImageName");	    	
 			textViewLabel.setText(itemName);
 			textViewDescr.setText(itemDescription);
+		    ImageView img = (ImageView) imageView;
+		    BitmapWorkerTask task = new BitmapWorkerTask(img);		    		    		   		    
+		    task.execute("http://ec2-54-186-87-220.us-west-2.compute.amazonaws.com:3000/images/"+ itemImageName);		    
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -104,6 +108,44 @@ public class WishlistAdapter extends BaseAdapter {
 		public String toJSON() {
 			return "{}";
 		}
+	}
+	
+	private class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
+	    private final WeakReference<ImageView> imageViewReference;
+	    private String data;
+
+	    public BitmapWorkerTask(ImageView imageView) {
+	        // Use a WeakReference to ensure the ImageView can be garbage
+	        // collected
+	        imageViewReference = new WeakReference<ImageView>(imageView);
+	    }
+
+	    // Decode image in background.
+	    @Override
+	    protected Bitmap doInBackground(String... params) {
+	        data = params[0];
+	        try {
+	            return BitmapFactory.decodeStream((InputStream) new URL(data)
+	                    .getContent());
+	        } catch (MalformedURLException e) {
+	            e.printStackTrace();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	        return null;
+	    }
+
+	    // Once complete, see if ImageView is still around and set bitmap.
+	    @Override
+	    protected void onPostExecute(Bitmap bitmap) {
+	        if (imageViewReference != null && bitmap != null) {
+	            final ImageView imageView = imageViewReference.get();
+	            if (imageView != null) {
+	                imageView.setImageBitmap(bitmap);
+	                imageView.setVisibility(View.VISIBLE);
+	            }
+	        }
+	    }
 	}
 	
 	//This method obtained from http://stackoverflow.com/questions/15549421/how-to-download-and-save-an-image-in-android
@@ -154,5 +196,7 @@ public class WishlistAdapter extends BaseAdapter {
 			return null;
 		}
 	}
+	
+	
 	
 }
