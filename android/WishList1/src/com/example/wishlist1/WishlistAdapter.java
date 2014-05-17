@@ -82,7 +82,7 @@ public class WishlistAdapter extends BaseAdapter {
 			textViewDescr.setText(itemDescription);
 		    ImageView img = (ImageView) imageView;
 		    BitmapWorkerTask task = new BitmapWorkerTask(img);		    		    		   		    
-		    task.execute("http://ec2-54-186-87-220.us-west-2.compute.amazonaws.com:3000/images/"+ itemImageName);		    
+		    task.execute("http://ec2-54-186-87-220.us-west-2.compute.amazonaws.com:3000/uploads/"+ itemImageName);		    
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
