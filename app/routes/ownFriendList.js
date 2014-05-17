@@ -52,7 +52,34 @@ exports.addFriend = function (req, res) {
                 }
                 var fields = {UserId: userId, RelativeId: relativeId, GroupId: 1, RelationshipAlias: relationShipAlias};
                 var query = methods.queryBuilder (gV.tableNames.Relationships, fields, gV.queryTypes.INSERT);
-                methods.runQuery(resMsg, resMsgErr, query, res);
+                function queryH(err, rows){
+                    if (err == undefined){
+                        var getAccountQuery = "SELECT * from Account_Details Where UserId='"+ userId+"';";
+                        function getAccountQueryH(err_a, rows_a){
+                            if (err_a  == undefined){
+                                if (rows_a.length > 0){
+                                    relationShipAlias = rows_a[0].Name;
+                                    var fields2 = {UserId: relativeId, RelativeId: userId, GroupId: 1, RelationshipAlias: relationShipAlias};
+                                    var query2 = methods.queryBuilder (gV.tableNames.Relationships, fields2, gV.queryTypes.INSERT);                        
+                                    methods.logQuery(query2);
+                                    methods.runQuery(resMsg, resMsgErr, query2, res);
+                                } else {
+
+                                    res.send('account not found');
+                                }
+                            } else {
+                                console.log ('err:'+err_a);
+                                res.send(err_a);
+                            }
+                        }
+                        methods.logQuery(getAccountQuery);
+                        connection.query(getAccountQuery, getAccountQueryH);
+                    } else {
+                        console.log ('err:' + err + ', in creating account, query:'+ query);
+                        res.send (err);
+                    }
+                }
+                connection.query(query, queryH);                
             } else if (rows.length == 0){ // If the account does not exist
                 // Create a non activated account
                 var relativeId = methods.generateUUID (); // Check for duplicate UUID
